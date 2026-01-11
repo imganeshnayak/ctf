@@ -1,3 +1,10 @@
+// TEMPORARY: Run seed script on startup in production
+if (process.env.SEED_ON_START === 'true') {
+    import('./seed.js').then(() => {
+        console.log('Database seeded. Exiting.');
+        process.exit(0);
+    });
+}
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
