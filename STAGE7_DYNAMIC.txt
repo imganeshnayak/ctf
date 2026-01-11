@@ -1,0 +1,241 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║         ✅ STAGE 7 - DYNAMIC HASH CHALLENGE (FINAL VERSION)          ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+MAJOR IMPROVEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ TWO-LAYER CHALLENGE
+   Layer 1: Decode from hex/binary/decimal (randomized per user)
+   Layer 2: Apply correct hash algorithm to decrypt
+
+✅ UNIQUE PER USER
+   Each user gets a different challenge based on their user ID
+
+✅ SHUFFLED ALGORITHMS
+   The 7 algorithms appear in random order for each user
+
+✅ COPY-PASTABLE CODE
+   All algorithms displayed directly on the page
+
+
+HOW IT WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. USER LOGS IN
+   ↓
+2. SYSTEM GENERATES UNIQUE CHALLENGE
+   - Uses user ID as seed for deterministic randomization
+   - Selects encoding format: hex, binary, or decimal
+   - Shuffles the order of 7 hash algorithms
+   ↓
+3. USER SEES PERSONALIZED CHALLENGE
+   - Encoded hash in their specific format
+   - 7 algorithms in randomized order
+   - Each algorithm includes decode + decrypt logic
+   ↓
+4. USER TRIES EACH ALGORITHM
+   - Copy algorithm code
+   - Paste into Python
+   - Enter the encoded value
+   - See the result
+   ↓
+5. ONLY ONE ALGORITHM WORKS
+   - SpiralHash (but in random position)
+   - Produces: HASH_MASTER
+   ↓
+6. USER SUBMITS FLAG
+   - Stage complete!
+
+
+EXAMPLE: THREE DIFFERENT USERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+User A (ID: 507f1f77bcf86cd799439011)
+  Format: Hexadecimal
+  Hash: 483f59426b4353456c3370
+  Algorithm Order: RotateHash, PrimeHash, FibonacciHash, SpiralHash, ...
+  Correct: Algorithm #4 (SpiralHash)
+
+User B (ID: 507f1f77bcf86cd799439012)
+  Format: Binary
+  Hash: 0100 1000 0011 1111 0101 1001 0100 0010 ...
+  Algorithm Order: WaveHash, SpiralHash, MatrixHash, QuantumHash, ...
+  Correct: Algorithm #2 (SpiralHash)
+
+User C (ID: 507f1f77bcf86cd799439013)
+  Format: Decimal
+  Hash: 72 63 89 66 107 67 83 69 108 51 112
+  Algorithm Order: QuantumHash, FibonacciHash, PrimeHash, WaveHash, ...
+  Correct: Algorithm #? (SpiralHash - different position!)
+
+
+THE 7 HASH ALGORITHMS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. RotateHash      - Bit rotation and XOR operations
+2. PrimeHash       - Prime number multiplication cipher
+3. FibonacciHash   - Fibonacci sequence transformation
+4. SpiralHash      - Spiral pattern algorithm ✅ CORRECT
+5. WaveHash        - Sine wave based encoding
+6. MatrixHash      - Matrix multiplication cipher
+7. QuantumHash     - Quantum-inspired superposition
+
+NOTE: Order is SHUFFLED for each user!
+
+
+ENCODING FORMATS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Hexadecimal Example:
+  483f59426b4353456c3370
+
+Binary Example:
+  0100 1000 0011 1111 0101 1001 0100 0010 0110 1011 0100 0011 
+  0101 0011 0100 0101 0110 1100 0011 0011 0111 0000
+
+Decimal Example:
+  72 63 89 66 107 67 83 69 108 51 112
+
+
+ALGORITHM CODE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Each algorithm includes:
+
+  # Step 1: Decode from [format] to hex
+  encoded_value = input("Enter the encoded value: ").strip()
+  [format-specific decoding logic]
+  
+  # Step 2: Apply hash algorithm
+  [algorithm-specific decryption logic]
+  
+  print('Result:', ''.join(result))
+
+
+USER WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Visit Stage 7
+2. See encoded hash (in hex, binary, or decimal)
+3. Copy Algorithm #1 code
+4. Run in Python
+5. Enter the encoded value when prompted
+6. See result → Gibberish? Try next algorithm
+7. Copy Algorithm #2 code
+8. Run in Python
+9. Enter the encoded value
+10. See result → Still gibberish? Continue...
+11. Eventually find the algorithm that outputs: HASH_MASTER
+12. Submit HASH_MASTER as the flag
+13. Stage complete! 🎉
+
+
+TECHNICAL IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Files Created/Modified:
+
+✅ backend/utils/stage7Generator.js
+   - generateDynamicStage7(userId) - Main generator function
+   - hashCode(str) - Convert user ID to seed number
+   - spiralHashEncode(text) - Encode HASH_MASTER
+   - encodeHash(hexHash, format) - Convert to hex/binary/decimal
+   - shuffleAlgorithms(seed) - Randomize algorithm order
+   - getAlgorithmCode(type, format) - Generate Python code
+   - generateStage7HTML(...) - Build HTML content
+
+✅ backend/controllers/stageController.js
+   - Added import for stage7Generator
+   - Modified getAllStages to use dynamic generation
+   - Stage 7 content generated on-the-fly per user
+
+✅ backend/seed.js
+   - Stage 7 definition (used as template/fallback)
+   - Static content replaced by dynamic generation
+
+
+ADVANTAGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Prevents Cheating
+   - Users can't share answers (different challenges)
+   - Algorithm position varies per user
+
+✅ More Challenging
+   - Two-layer puzzle (decode + decrypt)
+   - Can't assume algorithm order
+
+✅ Educational
+   - Teaches encoding formats (hex, binary, decimal)
+   - Demonstrates hash algorithm concepts
+   - Shows importance of trying different approaches
+
+✅ Scalable
+   - Deterministic (same user always gets same challenge)
+   - No database storage needed for variations
+   - Infinite unique combinations
+
+
+TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test the dynamic generation:
+  node test_dynamic_stage7.js
+
+This will show how 3 different users get 3 different challenges!
+
+
+NEXT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ✅ Dynamic generator created
+2. ✅ Controller updated to use generator
+3. 🔄 Restart backend server
+4. 🧪 Test with different user accounts
+5. ✅ Verify each user gets unique challenge
+
+
+RESTART BACKEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+To apply these changes:
+
+  cd backend
+  npm start
+
+Then log in with different user accounts and visit Stage 7.
+Each user will see a different challenge!
+
+
+EXAMPLE OUTPUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+User sees on their page:
+
+  🔐 Stage 7: Hash Identification Challenge
+  
+  Encoded Hash (Binary):
+  0100 1000 0011 1111 0101 1001 0100 0010 0110 1011 ...
+  
+  🔧 Algorithm #1: WaveHash
+  [Python code with decode + decrypt]
+  
+  🔧 Algorithm #2: SpiralHash
+  [Python code with decode + decrypt] ← This one works!
+  
+  🔧 Algorithm #3: MatrixHash
+  [Python code with decode + decrypt]
+  
+  ... and so on
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                    🎉 STAGE 7 IS NOW DYNAMIC! 🎉                     ║
+║                                                                      ║
+║  ✅ Two-layer challenge (decode + decrypt)                           ║
+║  ✅ Unique per user (different encoding & algorithm order)           ║
+║  ✅ Copy-pastable code directly on page                              ║
+║  ✅ Prevents answer sharing                                          ║
+║  ✅ More educational and challenging                                 ║
+╚══════════════════════════════════════════════════════════════════════╝

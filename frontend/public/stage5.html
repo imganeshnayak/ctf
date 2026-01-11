@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 5 - Code Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 15px #00ff88;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
+            }
+
+            to {
+                text-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88, 0 0 40px #00ff88;
+            }
+        }
+
+        .content {
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .code-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #00ff88;
+            color: #1a1a2e;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background: #00cc6a;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .warning {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+
+        /* Hidden secret */
+        .secret-key {
+            display: none;
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🐍 Stage 5: Python Debugger</h1>
+
+        <div class="content">
+            <p>Welcome to the final challenge! This is a <span class="highlight">two-part challenge</span>.</p>
+
+            <div class="code-box">
+                <p><strong>📋 Your Mission:</strong></p>
+                <ol>
+                    <li><strong>Part 1:</strong> Find the first part of the flag hidden in this HTML page</li>
+                    <li><strong>Part 2:</strong> Download and run the Python script below</li>
+                    <li><strong>Part 3:</strong> Enter the first part when the script asks for it</li>
+                    <li><strong>Part 4:</strong> The script will generate the complete flag!</li>
+                </ol>
+            </div>
+
+            <p>💡 <strong>Hint for Part 1:</strong> The first part is hidden somewhere in this HTML. Try inspecting the
+                page source or looking for hidden elements with class names containing "secret" or "key".</p>
+
+            <!-- Decoy comments to make it more challenging -->
+            <!-- This is not the flag: FAKE_FLAG_123 -->
+            <!-- Keep looking... -->
+
+            <div class="secret-key" data-first-part="PYTHON" data-hint="This is what you're looking for!">
+                <!-- First part of the flag: PYTHON -->
+            </div>
+
+            <div class="code-box">
+                <p><strong>🔧 Part 2: Download the Python Script</strong></p>
+                <p>Once you find the first part, download this Python script and run it:</p>
+                <a href="/stage5_decoder.py" download class="download-btn">📥 Download stage5_decoder.py</a>
+                <p class="warning">⚠️ You'll need Python 3 installed to run this script!</p>
+            </div>
+
+            <div class="code-box">
+                <p><strong>💻 How to run the script:</strong></p>
+                <pre style="color: #ffd700;">python stage5_decoder.py</pre>
+                <p style="margin-top: 10px;">The script will ask you for the first part of the flag. Enter what you
+                    found in Part 1!</p>
+            </div>
+
+            <p style="margin-top: 30px; text-align: center; opacity: 0.7;">
+                Good luck, hacker! 🎯
+            </p>
+        </div>
+    </div>
+
+    <!-- More decoy comments -->
+    <!-- The real secret is in the data attributes -->
+    <!-- Check elements with display: none -->
+</body>
+
+</html>

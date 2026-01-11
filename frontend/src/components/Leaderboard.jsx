@@ -1,0 +1,149 @@
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { getLeaderboard } from '../services/api';
+import '../App.css';
+
+function Leaderboard({ currentUser }) {
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        loadLeaderboard();
+    }, []);
+
+    const loadLeaderboard = async () => {
+        try {
+            setLoading(true);
+            const response = await getLeaderboard();
+            if (response.success) {
+                setLeaderboard(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading leaderboard:', err);
+            setError('Failed to load leaderboard');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getMedalIcon = (rank) => {
+        switch (rank) {
+            case 1:
+                return '🥇';
+            case 2:
+                return '🥈';
+            case 3:
+                return '🥉';
+            default:
+                return null;
+        }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="leaderboard-container">
+                <div className="loading-spinner">Loading leaderboard...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="leaderboard-container">
+                <div className="error-message">{error}</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="leaderboard-container fade-in">
+            <div className="leaderboard-header">
+                <h2>🏆 Leaderboard</h2>
+                <p className="leaderboard-subtitle">
+                    Rankings based on completed stages and submission time
+                </p>
+            </div>
+
+            <div className="leaderboard-table-wrapper">
+                <table className="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Completed</th>
+                            <th>Score</th>
+                            <th>Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {leaderboard.length === 0 ? (
+                            <tr>
+                                <td colSpan="5" className="no-data">
+                                    No players yet. Be the first to complete a challenge!
+                                </td>
+                            </tr>
+                        ) : (
+                            leaderboard.map((player) => {
+                                const isCurrentUser = currentUser && player.username === currentUser.username;
+                                return (
+                                    <tr
+                                        key={player.username}
+                                        className={isCurrentUser ? 'current-user' : ''}
+                                    >
+                                        <td className="rank-cell">
+                                            <span className="rank-number">
+                                                {getMedalIcon(player.rank) || `#${player.rank}`}
+                                            </span>
+                                        </td>
+                                        <td className="username-cell">
+                                            {player.username}
+                                            {isCurrentUser && <span className="you-badge">You</span>}
+                                        </td>
+                                        <td className="stages-cell">
+                                            <span className="stages-badge">
+                                                {player.completedStages} stages
+                                            </span>
+                                        </td>
+                                        <td className="score-cell">
+                                            <span className="score-value">{player.totalScore}</span>
+                                        </td>
+                                        <td className="time-cell">
+                                            {formatDate(player.lastCompletionTime)}
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {leaderboard.length > 0 && (
+                <div className="leaderboard-footer">
+                    <p>Total Players: {leaderboard.length}</p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+Leaderboard.propTypes = {
+    currentUser: PropTypes.shape({
+        username: PropTypes.string,
+        _id: PropTypes.string
+    })
+};
+
+export default Leaderboard;

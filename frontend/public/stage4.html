@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Stage 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .content {
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .glitch {
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Hidden elements - inspect to find! */
+        .secret-data {
+            display: none;
+            visibility: hidden;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="glitch">🔍 Stage 4: HTML Detective</h1>
+        
+        <div class="content">
+            <p>Welcome, detective! You've made it to Stage 4.</p>
+            
+            <p>Your mission is simple: <span class="highlight">Find the hidden flag in this HTML page.</span></p>
+            
+            <p>The flag is hidden somewhere in this page. You'll need to inspect the source code carefully to find it.</p>
+            
+            <p>💡 <strong>Hint:</strong> Try viewing the page source or using the browser's developer tools.</p>
+            
+            <!-- This is a decoy comment - not the real flag! -->
+            
+            <p>Remember: Not everything is visible to the naked eye. Sometimes you need to look deeper...</p>
+            
+            <div class="secret-data" data-hint="Look at the attributes!" data-clue="The flag might be encoded..." data-flag="SFRNTF9NQVNURVI=">
+                <!-- Hidden data attribute above contains Base64 encoded flag -->
+            </div>
+        </div>
+        
+        <footer>
+            <p>Good luck, detective! 🕵️</p>
+        </footer>
+    </div>
+
+    <!-- 
+        =====================================================
+        DEVELOPER NOTES (NOT THE FLAG):
+        =====================================================
+        This page was created for CTF Stage 4
+        The real flag is hidden in a data attribute
+        You'll need to decode it from Base64
+        =====================================================
+    -->
+
+    <script>
+        // Console message for those who check
+        console.log("%c🔍 Stage 4: HTML Detective", "color: #00ff88; font-size: 20px; font-weight: bold;");
+        console.log("%cLooking in the console? Good instinct!", "color: #00ff88; font-size: 14px;");
+        console.log("%cBut the flag is hidden in the HTML, not here...", "color: #ff6b6b; font-size: 14px;");
+        console.log("%cHint: Inspect the elements with class 'secret-data'", "color: #ffd700; font-size: 12px;");
+        
+        // This function is a decoy
+        function getFakeFlag() {
+            return "NOT_THE_REAL_FLAG";
+        }
+        
+        // Easter egg for curious minds
+        window.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'H') {
+                alert('Nice try! But the flag is in the HTML attributes, not triggered by keyboard shortcuts.');
+            }
+        });
+    </script>
+</body>
+</html>
