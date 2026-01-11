@@ -3,7 +3,6 @@ import '../App.css';
 import StageCard from '../components/StageCard';
 import ChallengeModal from '../components/ChallengeModal';
 import ProgressBar from '../components/ProgressBar';
-import TimerDisplay from '../components/TimerDisplay';
 import { createOrGetUser, getAllStages, validateStageKey, getTimer } from '../services/api';
 
 function formatTimer(seconds) {
@@ -154,7 +153,10 @@ function Challenges() {
                     </p>
                 </header>
 
-                <TimerDisplay />
+                <div className="timer-display">
+                    {/* Inline Timer Display Component */}
+                    <span>{formatTimer(timer.remaining)}</span>
+                </div>
 
                 {!user ? (
                     <div className="login-section fade-in">
