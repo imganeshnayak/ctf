@@ -34,7 +34,7 @@ function Challenges() {
             setTimer(data);
         };
         fetchTimer();
-        interval = setInterval(fetchTimer, 1000);
+            interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds
         return () => clearInterval(interval);
     }, []);
 
@@ -155,7 +155,9 @@ function Challenges() {
 
                 <div className="timer-display">
                     {/* Inline Timer Display Component */}
-                    <span>{formatTimer(timer.remaining)}</span>
+                        <div className="timer-display" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#0077ff', letterSpacing: '2px', margin: '1.5rem 0' }}>
+                            ⏰ {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
+                        </div>
                 </div>
 
                 {!user ? (

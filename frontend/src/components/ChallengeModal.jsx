@@ -10,6 +10,7 @@ const ChallengeModal = ({ stage, user, onClose, onSubmit, isSubmitting }) => {
         if (stage && stage.stageNumber === 9 && user) {
             const hintKey = `stage9_hint_used_${user._id}`;
             const revealed = localStorage.getItem(hintKey) === 'true';
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setHintRevealed(revealed);
         }
     }, [stage, user]);
