@@ -3,7 +3,14 @@ import '../App.css';
 import StageCard from '../components/StageCard';
 import ChallengeModal from '../components/ChallengeModal';
 import ProgressBar from '../components/ProgressBar';
-import { createOrGetUser, getAllStages, validateStageKey } from '../services/api';
+import TimerDisplay from '../components/TimerDisplay';
+import { createOrGetUser, getAllStages, validateStageKey, getTimer } from '../services/api';
+
+function formatTimer(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
 
 function Challenges() {
     const [user, setUser] = useState(null);
@@ -12,6 +19,7 @@ function Challenges() {
     const [selectedStage, setSelectedStage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [timer, setTimer] = useState({ running: false, remaining: 90 * 60 });
 
     // Load stages when user logs in
     useEffect(() => {
@@ -19,6 +27,17 @@ function Challenges() {
             loadStages();
         }
     }, [user]);
+
+    useEffect(() => {
+        let interval;
+        const fetchTimer = async () => {
+            const data = await getTimer();
+            setTimer(data);
+        };
+        fetchTimer();
+        interval = setInterval(fetchTimer, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -134,6 +153,8 @@ function Challenges() {
                         Test your cybersecurity skills through progressive challenges
                     </p>
                 </header>
+
+                <TimerDisplay />
 
                 {!user ? (
                     <div className="login-section fade-in">

@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getLeaderboard } from '../services/api';
+import { getTimer, startTimer } from '../services/api';
 import '../App.css';
 
 function Leaderboard({ currentUser }) {
     const [leaderboard, setLeaderboard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [timer, setTimer] = useState({ running: false, remaining: 90 * 60 });
+    const [timerLoading, setTimerLoading] = useState(false);
 
     useEffect(() => {
         loadLeaderboard();
+        fetchTimer();
+        const interval = setInterval(fetchTimer, 1000);
+        return () => clearInterval(interval);
     }, []);
 
     const loadLeaderboard = async () => {
@@ -24,6 +30,27 @@ function Leaderboard({ currentUser }) {
             setError('Failed to load leaderboard');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchTimer = async () => {
+        try {
+            const data = await getTimer();
+            setTimer(data);
+        } catch (err) {
+            console.error('Error fetching timer:', err);
+        }
+    };
+
+    const handleStart = async () => {
+        setTimerLoading(true);
+        try {
+            await startTimer();
+            // Optionally, you can refetch the timer here if needed
+        } catch (err) {
+            console.error('Error starting timer:', err);
+        } finally {
+            setTimerLoading(false);
         }
     };
 
@@ -51,11 +78,16 @@ function Leaderboard({ currentUser }) {
         });
     };
 
+    const formatTimer = (seconds) => {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
     if (loading) {
         return (
-            <div className="leaderboard-container">
+        
                 <div className="loading-spinner">Loading leaderboard...</div>
-            </div>
         );
     }
 
@@ -74,6 +106,15 @@ function Leaderboard({ currentUser }) {
                 <p className="leaderboard-subtitle">
                     Rankings based on completed stages and submission time
                 </p>
+            </div>
+
+            <div className="timer-controls">
+                <div className="timer-display">
+                    <strong>Timer:</strong> {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
+                </div>
+                <button className="btn-primary" onClick={handleStart} disabled={timerLoading}>
+                    Reset to 90:00
+                </button>
             </div>
 
             <div className="leaderboard-table-wrapper">

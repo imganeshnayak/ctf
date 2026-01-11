@@ -47,4 +47,20 @@ export const getLeaderboard = async () => {
     return response.data;
 };
 
+// Timer endpoints
+export const getTimer = async () => {
+    const response = await api.get('/timer');
+    return response.data;
+};
+
+export const startTimer = async () => {
+    const response = await api.post('/timer/start');
+    return response.data;
+};
+
+export const stopTimer = async () => {
+    const response = await api.post('/timer/stop');
+    return response.data;
+};
+
 export default api;

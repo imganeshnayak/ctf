@@ -12,6 +12,7 @@ import connectDB from './config/db.js';
 import userRoutes from './routes/users.js';
 import stageRoutes from './routes/stages.js';
 import leaderboardRoutes from './routes/leaderboard.js';
+import timerRoutes from './routes/timer.js';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/stages', stageRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/timer', timerRoutes);
 
 // Secret transmission endpoint for Stage 5
 app.get('/api/secret-transmission', (req, res) => {
