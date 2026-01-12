@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/stages', stageRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/timer', timerRoutes);
+app.use('/api/status', timerRoutes);
 
 // Secret transmission endpoint for Stage 5
 app.get('/api/secret-transmission', (req, res) => {

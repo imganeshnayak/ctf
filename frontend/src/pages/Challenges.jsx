@@ -30,8 +30,12 @@ function Challenges() {
     useEffect(() => {
         let interval;
         const fetchTimer = async () => {
-            const data = await getTimer();
-            setTimer(data);
+            try {
+                const data = await getTimer();
+                setTimer(data);
+            } catch (error) {
+                console.warn('Timer fetch failed:', error.message);
+            }
         };
         fetchTimer();
         interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds

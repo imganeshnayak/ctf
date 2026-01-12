@@ -11,7 +11,7 @@ const api = axios.create({
 
 // User endpoints
 export const createOrGetUser = async (username) => {
-    const response = await api.post('/users/session', { username });
+    const response = await api.post('/users/auth', { username });
     return response.data;
 };
 
@@ -49,7 +49,7 @@ export const getLeaderboard = async () => {
 
 // Timer endpoints
 export const getTimer = async () => {
-    const response = await api.get('/timer');
+    const response = await api.get('/status');
     return response.data;
 };
 

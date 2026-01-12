@@ -3,7 +3,7 @@ import { createOrGetUser, getUserProgress, resetProgress, deductPoints } from '.
 
 const router = express.Router();
 
-router.post('/session', createOrGetUser);
+router.post('/auth', createOrGetUser);
 router.get('/:id/progress', getUserProgress);
 router.post('/:id/reset', resetProgress);
 router.post('/:id/deduct', deductPoints);
