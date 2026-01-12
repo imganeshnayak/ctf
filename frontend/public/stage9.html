@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 9: Hidden in Plain Sight</title>
+    <style>
+        body {
+            background-color: #0a0e1a;
+            color: #e5e7eb;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #111827;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: #00f0ff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .info-panel {
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 4px solid #00f0ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+
+        .content {
+            font-size: 1.1em;
+            text-align: justify;
+            padding: 20px;
+            background: #1a2332;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        /* Highlighted words styling - Subtle enough to be missed if not looking carefully */
+        /* Flag Part 1: MODERN */
+        u[style*="text-decoration: underline"] {
+            text-decoration-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Prevent selection to force reading/finding */
+        ::selection {
+            background: transparent;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
+    <div class="container">
+        <h1>🔍 Hidden in Plain Sight</h1>
+
+        <div class="info-panel">
+            <p><strong>MISSION BRIEF:</strong> The flag is hidden within the text below. Read carefully and find the
+                anomalous words.</p>
+            <p><strong>INSTRUCTIONS:</strong> Find the hidden words that stand out (bold, underlined, different
+                size/color). Arrange them to form a coherent sentence. That sentence is your flag.</p>
+            <p><strong>FORMAT:</strong> Submit as UPPERCASE with underscores (e.g., EXAMPLE_SENTENCE_FOUND_HERE)</p>
+        </div>
+
+        <div class="hint-panel"
+            style="margin-bottom: 30px; background: rgba(17, 24, 39, 0.8); padding: 20px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div id="hint-ui" style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="margin: 0 0 5px 0; color: #f59e0b; font-size: 1.2rem;">Need a clue?</h3>
+                    <p style="margin: 0; font-size: 0.9rem; color: #9ca3af;">revealing this will cost points.</p>
+                </div>
+                <button id="hint-btn"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: bold; transition: transform 0.2s;">
+                    💡 Reveal Hint (-150 pts)
+                </button>
+            </div>
+            <div id="hint-text"
+                style="display: none; margin-top: 15px; padding: 15px; background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; border-radius: 4px;">
+                <p style="margin: 0; color: #e5e7eb;"><strong>Hint:</strong> Look for text that stands out - different
+                    colors, bold formatting, shadows, borders, or backgrounds and changes in the text size. Arrange the
+                    words in the meaning full sentence. Count carefully - there should be exactly 10 words total!</p>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                const hintBtn = document.getElementById('hint-btn');
+                const hintText = document.getElementById('hint-text');
+                const userStr = localStorage.getItem('ctf_user');
+
+                let user = null;
+                try { user = JSON.parse(userStr); } catch (e) { }
+
+                if (!user) {
+                    hintBtn.textContent = "Login Required to Use Hint";
+                    hintBtn.disabled = true;
+                    hintBtn.style.opacity = 0.5;
+                    hintBtn.style.cursor = 'not-allowed';
+                    return;
+                }
+
+                // Use the same key format as the main app would expect if we were checking it there
+                // But since this is a new feature for this page, we define a key.
+                const hintKey = 'stage9_hint_revealed_' + user._id;
+                const isRevealed = localStorage.getItem(hintKey) === 'true';
+
+                if (isRevealed) {
+                    showHintState();
+                }
+
+                hintBtn.onclick = function () {
+                    // Re-read user to get latest score
+                    const currentUserStr = localStorage.getItem('ctf_user');
+                    if (currentUserStr) user = JSON.parse(currentUserStr);
+
+                    if (user.totalScore < 150) {
+                        alert("❌ Insufficient points!\n\nYou need at least 150 points to reveal this hint.\nYour current score: " + user.totalScore + " points");
+                        return;
+                    }
+
+                    if (confirm("Revealing this hint will deduct 150 points from your score.\n\nContinue?")) {
+                        // Disable button immediately to prevent double clicks
+                        hintBtn.disabled = true;
+                        hintBtn.textContent = "Processing...";
+
+                        // Call Backend API to deduct points
+                        fetch(`http://localhost:5000/api/users/${user._id}/deduct`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ points: 150, reason: 'Stage 9 Hint' })
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    return response.json().then(err => { throw new Error(err.message || 'Failed to deduct points'); });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                // Update local user data with server response
+                                user.totalScore = data.data.totalScore;
+                                localStorage.setItem('ctf_user', JSON.stringify(user));
+                                localStorage.setItem(hintKey, 'true');
+
+                                showHintState();
+                                alert("Hint revealed! 150 points deducted.");
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert("Error revealing hint: " + error.message);
+                                // Re-enable button
+                                hintBtn.disabled = false;
+                                hintBtn.textContent = "💡 Reveal Hint (-150 pts)";
+                            });
+                    }
+                };
+
+                function showHintState() {
+                    hintText.style.display = 'block';
+                    hintBtn.textContent = "💡 Hint Revealed";
+                    hintBtn.disabled = true;
+                    hintBtn.style.opacity = 0.5;
+                    hintBtn.style.cursor = 'default';
+                }
+            })();
+        </script>
+
+        <div class="content">
+            <p>
+                In today's rapidly evolving digital landscape, the role of innovation has never been more critical to
+                our collective progress.
+                We find ourselves at the intersection of unprecedented technological advancement and human creativity,
+                where every breakthrough
+                opens new possibilities for solving complex global challenges. The transformation we're witnessing isn't
+                just about faster
+                computers or smarter algorithms; it's fundamentally about reimagining how we interact with information,
+                with each other,
+                and with the world around us.
+            </p>
+
+            <p>
+                Consider how <strong style="font-weight: bold;  font-size: 0.7em;">TECHNOLOGY</strong> has permeated
+                every aspect of our daily existence. From the moment we wake up to the sound of a smart alarm that has
+                analyzed our sleep
+                patterns, to the instant we check our phones for messages from loved ones across the globe, we are
+                constantly engaging with
+                systems designed to enhance our capabilities. These tools have become so seamlessly integrated into our
+                routines that we
+                often forget they represent the culmination of decades of research, development, and iterative
+                improvement by countless
+                engineers and scientists working tirelessly to push the boundaries of what's possible.
+            </p>
+
+            <p>
+                The infrastructure supporting our digital lives operates on a scale that would have been unimaginable
+                just a generation ago.
+                Data centers spanning entire warehouses process billions of transactions every second, while undersea
+                cables stretching
+                thousands of miles carry information at the speed of light between continents. This global network
+                enables real-time
+                collaboration between individuals who have never met in person, facilitates international commerce worth
+                trillions of
+                dollars annually, and provides access to the sum of human knowledge with just a few keystrokes or voice
+                commands.
+            </p>
+
+            <p>
+                Yet with all these advancements comes a profound responsibility to ensure that our <u
+                    style="text-decoration: underline;  font-size: 1em;">MODERN</u>
+                systems serve humanity's best interests. We must grapple with questions of privacy, security, and equity
+                as we build
+                the digital future. How do we protect individual rights while enabling the data sharing necessary for
+                innovation? How do
+                we prevent malicious actors from exploiting vulnerabilities in our interconnected systems? How do we
+                ensure that the
+                benefits of technological progress are distributed fairly rather than concentrating wealth and power in
+                the hands of a few?
+            </p>
+
+            <p>
+                These aren't merely theoretical concerns—they have real-world implications that affect billions of
+                people every day. When
+                a social media platform's algorithm determines what news stories appear in our feeds, it <strong><u
+                        style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">IS</u></strong>
+                shaping public discourse and potentially influencing democratic processes. When an artificial
+                intelligence system makes
+                decisions about loan applications or job candidates, it can perpetuate historical biases if not
+                carefully designed and
+                monitored. When a cybersecurity breach exposes sensitive personal information, it can have devastating
+                consequences for
+                the individuals affected, from identity theft to financial ruin.
+            </p>
+
+            <p>
+                The pace of change shows no signs of slowing. Emerging technologies like quantum computing promise to
+                revolutionize fields
+                from cryptography to drug discovery. Advances in biotechnology are enabling us to edit genes with
+                unprecedented precision,
+                raising both hopes for curing genetic diseases and concerns about unintended consequences. The Internet
+                of Things is
+                connecting everyday objects to the internet, creating smart homes and cities but also expanding the
+                attack surface for
+                potential security threats. Understanding <strong
+                    style="font-weight: bold; text-decoration: underline; font-size: 1.25em;">HOW</strong>
+                these technologies work and their potential impacts is becoming essential knowledge for informed
+                citizenship in the 21st century.
+            </p>
+
+            <p>
+                Education systems worldwide are struggling to keep pace with these rapid changes. The skills that were
+                valuable in the
+                job market a decade ago may be obsolete today, while entirely new career paths are emerging that didn't
+                exist when today's
+                students were born. We need to rethink not just what we teach, but how we teach it, fostering
+                adaptability, critical
+                thinking, and lifelong learning rather than rote memorization of facts that can be instantly retrieved
+                from the internet.
+                The ability to collaborate across disciplines, to communicate complex ideas clearly, and to navigate
+                ambiguity will be
+                increasingly important as automation handles more routine tasks.
+            </p>
+
+            <p>
+                Meanwhile, the environmental impact of our digital infrastructure demands urgent attention. The energy
+                consumption of data
+                centers and cryptocurrency mining operations rivals that of entire countries. Electronic waste from
+                discarded devices contains
+                toxic materials that can harm ecosystems if not properly recycled. As we continue <u
+                    style="text-decoration: underline; font-weight: bold; font-size: 1.3em;">SHAPING</u>
+                our technological future, we must prioritize sustainability, seeking renewable energy sources for our
+                digital infrastructure
+                and designing products with their entire lifecycle in mind, from manufacturing to eventual disposal or
+                recycling.
+            </p>
+
+            <p>
+                The COVID-19 pandemic dramatically accelerated many digital trends that were already underway. Remote
+                work became the norm
+                for millions of knowledge workers virtually overnight. Telemedicine expanded rapidly as patients sought
+                to avoid in-person
+                visits. Online education scaled to unprecedented levels as schools and universities closed their
+                physical campuses. These
+                shifts revealed both the tremendous potential and the significant limitations of our current
+                technologies. Video conferencing
+                tools enabled business continuity but couldn't fully replicate the spontaneous interactions and
+                relationship-building that
+                happen in physical offices. Digital learning platforms provided access to education but highlighted the
+                digital divide
+                affecting students without reliable internet access or appropriate devices.
+            </p>
+
+            <p>
+                Looking ahead, the integration of artificial intelligence into more aspects of our lives seems
+                inevitable. AI assistants
+                are becoming more sophisticated, capable of understanding context and nuance in ways that seemed like
+                science fiction just
+                years ago. Autonomous vehicles are being tested on roads around the <strong><u
+                        style="font-weight: bold; text-decoration: underline; font-size: 1.25em;">WORLD</u></strong>,
+                promising to reduce traffic accidents and transform urban planning. Machine learning algorithms are
+                discovering new drugs,
+                predicting weather patterns with greater accuracy, and even creating art and music that challenges our
+                understanding of
+                creativity itself.
+            </p>
+
+            <p>
+                However, as these systems become more powerful and pervasive, questions about transparency and
+                accountability become more
+                pressing. When an AI makes a decision that affects someone's life, they deserve to understand why that
+                decision was made.
+                Yet many modern AI systems operate as "black boxes," with decision-making processes so complex that even
+                their creators
+                can't fully explain them. Developing interpretable AI that can justify its conclusions while maintaining
+                high performance
+                is one of <strong style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">THE</strong>
+                great challenges
+                facing researchers today.
+            </p>
+
+            <p>
+                The democratization of technology creation tools is empowering individuals and small teams to build
+                solutions that once
+                would have required massive corporate resources. Open-source software enables developers worldwide to
+                collaborate on projects
+                that benefit everyone. Cloud computing platforms provide access to powerful infrastructure on a
+                pay-as-you-go basis, lowering
+                barriers to entry for startups. No-code and low-code platforms are enabling people without traditional
+                programming skills
+                to create functional applications. This democratization has the potential to unleash a wave of
+                innovation from diverse
+                perspectives and backgrounds.
+            </p>
+
+            <p>
+                Yet <u style="text-decoration: underline; font-weight: bold; font-size: 1.25em;">WE</u> must remain
+                vigilant about the
+                concentration of power in the hands of a few large technology companies. These platforms have become
+                essential infrastructure
+                for modern life, yet they're controlled by private entities accountable primarily to their shareholders
+                rather than the
+                public interest. Debates about content moderation, data ownership, and market competition are
+                fundamentally about who gets
+                to set the rules for our digital public spaces and how those rules are enforced.
+            </p>
+
+            <p>
+                The future of work is being reshaped by automation and AI, with predictions ranging from utopian visions
+                of abundance and
+                leisure to dystopian scenarios of mass unemployment and inequality. The reality will likely fall
+                somewhere in between,
+                with some jobs disappearing while new ones emerge, and many roles being transformed rather than
+                eliminated entirely.
+                Preparing for this transition requires not just technical solutions but also social policies that ensure
+                economic security
+                and opportunity for all members of society.
+            </p>
+
+            <p>
+                Blockchain technology and cryptocurrencies represent another frontier of innovation, promising to
+                <strong style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">CONNECT</strong>
+                people in new ways through decentralized systems that don't require traditional intermediaries. While
+                the technology has
+                shown promise in areas like supply chain transparency and digital identity, it has also been associated
+                with speculation,
+                fraud, and environmental concerns due to energy-intensive mining processes. Finding the right
+                applications and governance
+                models for blockchain will be crucial to realizing its potential benefits while mitigating its risks.
+            </p>
+
+            <p>
+                As we navigate these complex challenges and opportunities, it's essential to maintain a human-centered
+                perspective. Technology
+                should serve people, not the other way around. The most successful innovations are those that genuinely
+                improve people's
+                <u style=" font-weight: bold; font-size: 1em;">Lives</u> rather than simply being technically
+                impressive. This means involving diverse stakeholders in the design process, considering the needs of
+                vulnerable populations,
+                and being willing to acknowledge when a technology isn't working as intended and needs to be redesigned
+                or even abandoned.
+            </p>
+
+            <p>
+                In conclusion, we stand at a pivotal moment in human history. The decisions we make today about how to
+                develop, deploy,
+                and govern technology will shape the world for generations to come. By approaching these challenges with
+                wisdom, empathy,
+                and a commitment to the common good, we can harness the incredible power of innovation to create a
+                future that is more
+                prosperous, sustainable, and just for all. The path forward requires ongoing dialogue between
+                technologists, policymakers,
+                ethicists, and citizens from all walks of life, working together to ensure that our technological
+                capabilities are matched
+                by our moral wisdom and social responsibility.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

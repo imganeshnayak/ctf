@@ -232,24 +232,20 @@ const stages = [
         
         <div class="info-box">
           <p>🔍 <strong>How to extract the message:</strong></p>
-          <p><strong>Method 1 - Using strings command (Linux/Mac):</strong></p>
-          <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">strings stage6_secret.png | grep FLAG</pre>
-          <p><strong>Method 2 - Using a text editor:</strong></p>
+          <p><strong>Method 1 - Using a text editor:</strong></p>
           <ul>
             <li>Open the PNG file with Notepad or any text editor</li>
             <li>Search for readable text at the end of the file</li>
             <li>Look for the pattern: FLAG{...}</li>
           </ul>
-          <p><strong>Method 3 - Using online tools:</strong></p>
+          <p><strong>Method 2 - Using online tools:</strong></p>
           <ul>
             <li>Search for "steganography decoder online"</li>
             <li>Upload the image and extract hidden text</li>
           </ul>
         </div>
         
-        <div class="cipher-box">
-          <p><strong>Hint:</strong> The flag is appended at the end of the PNG file as plain text!</p>
-        </div>
+
       </div>
     `,
     correctKey: 'STEGO_MASTER',
@@ -542,237 +538,25 @@ print('QuantumHash:', ''.join(result))</code></pre>
     challengeContent: `
       <div class="challenge-box">
         <h3>🔍 Stage 9: Hidden in Plain Sight</h3>
-        <p>The flag is concealed somewhere in this document. Your task is to find it.</p>
+        <p>The flag is concealed somewhere in a separate document. Your task is to find it.</p>
         
         <div class="info-box">
           <p>💡 <strong>Challenge:</strong></p>
-          <p>Read through the cybersecurity document below carefully. The flag is hidden within the text.</p>
-          <p><strong>Before Submitting ensure that Flag has Capital letters and if not convert it to uppercase and submit:</strong> Uppercase letters, numbers, and underscores (e.g., EXAMPLE_FLAG_2024)</p>
+          <p>We've intercepted a classified document. It looks like a standard article, but our intel suggests a secret message is hidden within.</p>
+          <p><a href="/stage9.html" target="_blank" style="color: #00ff88; font-size: 1.2em; text-decoration: underline; font-weight: bold;">📄 Open the Document (Full Page)</a></p>
+        </div>
+
+        <div class="cipher-box">
+           <p><strong>Instructions:</strong></p>
+           <ul>
+             <li>Read the document carefully.</li>
+             <li>Look for anomalies (formatting, styles, or hidden elements).</li>
+             <li>Assemble the hidden pieces to form the flag.</li>
+           </ul>
+           <p><strong>Format:</strong> UPPERCASE with underscores (e.g., EXAMPLE_FLAG_2024)</p>
         </div>
         
-        
-        <style>
-          .no-select {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-          }
-        </style>
-        
-        <div class="cipher-box no-select" style="max-height: 500px; overflow-y: auto; padding: 20px; line-height: 1.8; text-align: justify; border: 1px solid #ddd;" oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
-          <p>
-            In today's rapidly evolving digital landscape, the role of innovation has never been more critical to our collective progress. 
-            We find ourselves at the intersection of unprecedented technological advancement and human creativity, where every breakthrough 
-            opens new possibilities for solving complex global challenges. The transformation we're witnessing isn't just about faster 
-            computers or smarter algorithms; it's fundamentally about reimagining how we interact with information, with each other, 
-            and with the world around us.
-          </p>
-          
-          <p>
-            Consider how <strong style="font-weight: bold;  font-size: 0.7em;">TECHNOLOGY</strong> has permeated 
-            every aspect of our daily existence. From the moment we wake up to the sound of a smart alarm that has analyzed our sleep 
-            patterns, to the instant we check our phones for messages from loved ones across the globe, we are constantly engaging with 
-            systems designed to enhance our capabilities. These tools have become so seamlessly integrated into our routines that we 
-            often forget they represent the culmination of decades of research, development, and iterative improvement by countless 
-            engineers and scientists working tirelessly to push the boundaries of what's possible.
-          </p>
-          
-          <p>
-            The infrastructure supporting our digital lives operates on a scale that would have been unimaginable just a generation ago. 
-            Data centers spanning entire warehouses process billions of transactions every second, while undersea cables stretching 
-            thousands of miles carry information at the speed of light between continents. This global network enables real-time 
-            collaboration between individuals who have never met in person, facilitates international commerce worth trillions of 
-            dollars annually, and provides access to the sum of human knowledge with just a few keystrokes or voice commands.
-          </p>
-          
-          <p>
-            Yet with all these advancements comes a profound responsibility to ensure that our <u style="text-decoration: underline;  font-size: 1em;">MODERN</u> 
-            systems serve humanity's best interests. We must grapple with questions of privacy, security, and equity as we build 
-            the digital future. How do we protect individual rights while enabling the data sharing necessary for innovation? How do 
-            we prevent malicious actors from exploiting vulnerabilities in our interconnected systems? How do we ensure that the 
-            benefits of technological progress are distributed fairly rather than concentrating wealth and power in the hands of a few?
-          </p>
-          
-          <p>
-            These aren't merely theoretical concerns—they have real-world implications that affect billions of people every day. When 
-            a social media platform's algorithm determines what news stories appear in our feeds, it <strong><u style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">IS</u></strong> 
-            shaping public discourse and potentially influencing democratic processes. When an artificial intelligence system makes 
-            decisions about loan applications or job candidates, it can perpetuate historical biases if not carefully designed and 
-            monitored. When a cybersecurity breach exposes sensitive personal information, it can have devastating consequences for 
-            the individuals affected, from identity theft to financial ruin.
-          </p>
-          
-          <p>
-            The pace of change shows no signs of slowing. Emerging technologies like quantum computing promise to revolutionize fields 
-            from cryptography to drug discovery. Advances in biotechnology are enabling us to edit genes with unprecedented precision, 
-            raising both hopes for curing genetic diseases and concerns about unintended consequences. The Internet of Things is 
-            connecting everyday objects to the internet, creating smart homes and cities but also expanding the attack surface for 
-            potential security threats. Understanding <strong style="font-weight: bold; text-decoration: underline; font-size: 1.25em;">HOW</strong> 
-            these technologies work and their potential impacts is becoming essential knowledge for informed citizenship in the 21st century.
-          </p>
-          
-          <p>
-            Education systems worldwide are struggling to keep pace with these rapid changes. The skills that were valuable in the 
-            job market a decade ago may be obsolete today, while entirely new career paths are emerging that didn't exist when today's 
-            students were born. We need to rethink not just what we teach, but how we teach it, fostering adaptability, critical 
-            thinking, and lifelong learning rather than rote memorization of facts that can be instantly retrieved from the internet. 
-            The ability to collaborate across disciplines, to communicate complex ideas clearly, and to navigate ambiguity will be 
-            increasingly important as automation handles more routine tasks.
-          </p>
-          
-          <p>
-            Meanwhile, the environmental impact of our digital infrastructure demands urgent attention. The energy consumption of data 
-            centers and cryptocurrency mining operations rivals that of entire countries. Electronic waste from discarded devices contains 
-            toxic materials that can harm ecosystems if not properly recycled. As we continue <u style="text-decoration: underline; font-weight: bold; font-size: 1.3em;">SHAPING</u> 
-            our technological future, we must prioritize sustainability, seeking renewable energy sources for our digital infrastructure 
-            and designing products with their entire lifecycle in mind, from manufacturing to eventual disposal or recycling.
-          </p>
-          
-          <p>
-            The COVID-19 pandemic dramatically accelerated many digital trends that were already underway. Remote work became the norm 
-            for millions of knowledge workers virtually overnight. Telemedicine expanded rapidly as patients sought to avoid in-person 
-            visits. Online education scaled to unprecedented levels as schools and universities closed their physical campuses. These 
-            shifts revealed both the tremendous potential and the significant limitations of our current technologies. Video conferencing 
-            tools enabled business continuity but couldn't fully replicate the spontaneous interactions and relationship-building that 
-            happen in physical offices. Digital learning platforms provided access to education but highlighted the digital divide 
-            affecting students without reliable internet access or appropriate devices.
-          </p>
-          
-          <p>
-            Looking ahead, the integration of artificial intelligence into more aspects of our lives seems inevitable. AI assistants 
-            are becoming more sophisticated, capable of understanding context and nuance in ways that seemed like science fiction just 
-            years ago. Autonomous vehicles are being tested on roads around the <strong><u style="font-weight: bold; text-decoration: underline; font-size: 1.25em;">WORLD</u></strong>, 
-            promising to reduce traffic accidents and transform urban planning. Machine learning algorithms are discovering new drugs, 
-            predicting weather patterns with greater accuracy, and even creating art and music that challenges our understanding of 
-            creativity itself.
-          </p>
-          
-          <p>
-            However, as these systems become more powerful and pervasive, questions about transparency and accountability become more 
-            pressing. When an AI makes a decision that affects someone's life, they deserve to understand why that decision was made. 
-            Yet many modern AI systems operate as "black boxes," with decision-making processes so complex that even their creators 
-            can't fully explain them. Developing interpretable AI that can justify its conclusions while maintaining high performance 
-            is one of <strong style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">THE</strong> great challenges 
-            facing researchers today.
-          </p>
-          
-          <p>
-            The democratization of technology creation tools is empowering individuals and small teams to build solutions that once 
-            would have required massive corporate resources. Open-source software enables developers worldwide to collaborate on projects 
-            that benefit everyone. Cloud computing platforms provide access to powerful infrastructure on a pay-as-you-go basis, lowering 
-            barriers to entry for startups. No-code and low-code platforms are enabling people without traditional programming skills 
-            to create functional applications. This democratization has the potential to unleash a wave of innovation from diverse 
-            perspectives and backgrounds.
-          </p>
-          
-          <p>
-            Yet <u style="text-decoration: underline; font-weight: bold; font-size: 1.25em;">WE</u> must remain vigilant about the 
-            concentration of power in the hands of a few large technology companies. These platforms have become essential infrastructure 
-            for modern life, yet they're controlled by private entities accountable primarily to their shareholders rather than the 
-            public interest. Debates about content moderation, data ownership, and market competition are fundamentally about who gets 
-            to set the rules for our digital public spaces and how those rules are enforced.
-          </p>
-          
-          <p>
-            The future of work is being reshaped by automation and AI, with predictions ranging from utopian visions of abundance and 
-            leisure to dystopian scenarios of mass unemployment and inequality. The reality will likely fall somewhere in between, 
-            with some jobs disappearing while new ones emerge, and many roles being transformed rather than eliminated entirely. 
-            Preparing for this transition requires not just technical solutions but also social policies that ensure economic security 
-            and opportunity for all members of society.
-          </p>
-          
-          <p>
-            Blockchain technology and cryptocurrencies represent another frontier of innovation, promising to <strong style="font-weight: bold; text-decoration: underline; font-size: 1.3em;">CONNECT</strong> 
-            people in new ways through decentralized systems that don't require traditional intermediaries. While the technology has 
-            shown promise in areas like supply chain transparency and digital identity, it has also been associated with speculation, 
-            fraud, and environmental concerns due to energy-intensive mining processes. Finding the right applications and governance 
-            models for blockchain will be crucial to realizing its potential benefits while mitigating its risks.
-          </p>
-          
-          <p>
-            As we navigate these complex challenges and opportunities, it's essential to maintain a human-centered perspective. Technology 
-            should serve people, not the other way around. The most successful innovations are those that genuinely improve people's 
-            <u style=" font-weight: bold; font-size: 1em;">Lives</u> rather than simply being technically 
-            impressive. This means involving diverse stakeholders in the design process, considering the needs of vulnerable populations, 
-            and being willing to acknowledge when a technology isn't working as intended and needs to be redesigned or even abandoned.
-          </p>
-          
-          <p>
-            In conclusion, we stand at a pivotal moment in human history. The decisions we make today about how to develop, deploy, 
-            and govern technology will shape the world for generations to come. By approaching these challenges with wisdom, empathy, 
-            and a commitment to the common good, we can harness the incredible power of innovation to create a future that is more 
-            prosperous, sustainable, and just for all. The path forward requires ongoing dialogue between technologists, policymakers, 
-            ethicists, and citizens from all walks of life, working together to ensure that our technological capabilities are matched 
-            by our moral wisdom and social responsibility.
-          </p>
-        </div>
-        
-        <script>
-          // Prevent keyboard shortcuts for copying in cipher-box
-          document.addEventListener('DOMContentLoaded', function() {
-            const cipherBox = document.querySelector('.cipher-box.no-select');
-            if (cipherBox) {
-              cipherBox.addEventListener('keydown', function(e) {
-                // Prevent Ctrl+C, Ctrl+A, Ctrl+X
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'a' || e.key === 'x' || e.key === 'C' || e.key === 'A' || e.key === 'X')) {
-                  e.preventDefault();
-                  return false;
-                }
-              });
-            }
-          });
-        </script>
-        
-        <div class="info-box" style="margin-top: 20px;">
-          <p>⚠️ <strong>Hint Available (Penalty: -150 points)</strong></p>
-          <p>Stuck? You can reveal a hint, but it will cost you 150 points from your score.</p>
-          <button id="revealHintBtn" onclick="revealHint()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px;">
-            💡 Reveal Hint (-150 points)
-          </button>
-          <div id="hintContent" style="display: none; margin-top: 15px; padding: 15px; background: rgba(255,107,107,0.1); border-left: 4px solid #ff6b6b; border-radius: 5px;">
-            <p><strong>Hint:</strong> Look for text that stands out - different colors, bold formatting, shadows, borders, or backgrounds and changes in the text size. Arrange the words in the meaning full sentence. Count carefully - there should be exactly 10 words  total!</p>
-          </div>
-        </div>
-        
-        <script>
-          function revealHint() {
-            const hintContent = document.getElementById('hintContent');
-            const hintBtn = document.getElementById('revealHintBtn');
-            
-            if (hintContent.style.display === 'none') {
-              if (confirm('Revealing this hint will deduct 150 points from your score. Continue?')) {
-                hintContent.style.display = 'block';
-                hintBtn.disabled = true;
-                hintBtn.style.opacity = '0.5';
-                hintBtn.style.cursor = 'not-allowed';
-                hintBtn.textContent = '💡 Hint Revealed (-150 points)';
-                
-                // Store hint usage in localStorage to persist across page reloads
-                localStorage.setItem('stage9_hint_used', 'true');
-                
-                // Notify parent component about hint usage
-                window.dispatchEvent(new CustomEvent('hintUsed', { 
-                  detail: { stage: 9, penalty: 150 } 
-                }));
-              }
-            }
-          }
-          
-          // Check if hint was already revealed
-          window.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('stage9_hint_used') === 'true') {
-              const hintContent = document.getElementById('hintContent');
-              const hintBtn = document.getElementById('revealHintBtn');
-              hintContent.style.display = 'block';
-              hintBtn.disabled = true;
-              hintBtn.style.opacity = '0.5';
-              hintBtn.style.cursor = 'not-allowed';
-              hintBtn.textContent = '💡 Hint Already Revealed';
-            }
-          });
-        </script>
+
       </div>
     `,
     correctKey: 'MODERN_TECHNOLOGY_IS_SHAPING_THE_WORLD_AND_HOW_WE_CONNECT_LIVES',
@@ -789,7 +573,7 @@ print('QuantumHash:', ''.join(result))</code></pre>
     description: 'The surface is a lie. Go deeper.',
     difficulty: 'Medium',
     challengeContent: `
-      <div class="challenge-box">
+  < div class= "challenge-box" >
         <h3>🔐 Stage 10: JWT Inception</h3>
         <p>We intercepted this token from a high-security admin panel. The payload holds a secret within a secret.</p>
         
@@ -813,9 +597,9 @@ print('QuantumHash:', ''.join(result))</code></pre>
           <p>3. Repeat until you hit the core (Layer 3).</p>
           <p>4. The flag is in the deepest layer.</p>
         </div>
-      </div>
+      </div >
 
-    `,
+  `,
     correctKey: 'JWT_INCEPTION_MASTER_2026',
     hints: [
       'The "portal" field in the outer payload looks like another JWT',

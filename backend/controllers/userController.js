@@ -98,3 +98,39 @@ export const resetProgress = async (req, res) => {
         });
     }
 };
+
+// Deduct points (e.g., for hints)
+export const deductPoints = async (req, res) => {
+    try {
+        const { points, reason } = req.body;
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        if (user.totalScore < points) {
+            return res.status(400).json({
+                success: false,
+                message: 'Insufficient points'
+            });
+        }
+
+        user.totalScore -= points;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Deducted ${points} points`,
+            data: user
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

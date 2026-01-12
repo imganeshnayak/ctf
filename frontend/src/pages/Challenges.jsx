@@ -34,7 +34,7 @@ function Challenges() {
             setTimer(data);
         };
         fetchTimer();
-            interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds
+        interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds
         return () => clearInterval(interval);
     }, []);
 
@@ -68,6 +68,10 @@ function Challenges() {
             }
         } catch (error) {
             console.error('Error loading stages:', error);
+            if (error.response && error.response.status === 404) {
+                alert('Session expired or user not found. Please login again.');
+                handleLogout();
+            }
         }
     };
 
@@ -146,18 +150,13 @@ function Challenges() {
     return (
         <div className="app">
             <div className="container">
-                <header className="header">
-                    <h1 className="header-title">🚩 CTF Challenge</h1>
-                    <p className="header-subtitle">
-                        Test your cybersecurity skills through progressive challenges
-                    </p>
-                </header>
+
 
                 <div className="timer-display">
                     {/* Inline Timer Display Component */}
-                        <div className="timer-display" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#0077ff', letterSpacing: '2px', margin: '1.5rem 0' }}>
-                            ⏰ {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
-                        </div>
+                    <div className="timer-display" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#0077ff', letterSpacing: '2px', margin: '1.5rem 0' }}>
+                        ⏰ {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
+                    </div>
                 </div>
 
                 {!user ? (
