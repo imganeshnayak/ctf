@@ -952,11 +952,16 @@ const seedDatabase = async () => {
       console.log(`Stage ${stage.stageNumber}: ${stage.title} (${stage.difficulty}) - ${stage.points} points`);
     });
 
-    process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);
-    process.exit(1);
+    throw error;
   }
 };
 
-seedDatabase();
+export { seedDatabase };
+
+// Run directly when called via `node seed.js`
+const isMain = process.argv[1]?.endsWith('seed.js');
+if (isMain) {
+  seedDatabase().then(() => process.exit(0)).catch(() => process.exit(1));
+}

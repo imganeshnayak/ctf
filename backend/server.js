@@ -109,6 +109,35 @@ app.get('/api/lobby/status', (req, res) => {
     res.json({ success: true, data: getLobbySnapshot() });
 });
 
+// ── Remote Seed Endpoints (triggered from browser to run seeding on server) ──
+app.post('/api/admin/seed-stages', async (req, res) => {
+    const { password } = req.body;
+    if (password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ success: false, message: 'Invalid admin password' });
+    }
+    try {
+        const { seedDatabase } = await import('./seed.js');
+        await seedDatabase();
+        res.json({ success: true, message: 'Stages seeded successfully!' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.post('/api/admin/seed-mcqs', async (req, res) => {
+    const { password } = req.body;
+    if (password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ success: false, message: 'Invalid admin password' });
+    }
+    try {
+        const { seedMcqs } = await import('./scripts/seedMcq.js');
+        await seedMcqs();
+        res.json({ success: true, message: 'MCQs seeded successfully!' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // Serve frontend static files from frontend/public
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

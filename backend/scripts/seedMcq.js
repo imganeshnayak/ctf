@@ -182,11 +182,16 @@ const seedMcqs = async () => {
         }
 
         console.log('\nAll stage MCQs seeded successfully!');
-        process.exit(0);
     } catch (error) {
         console.error('Error seeding MCQs:', error);
-        process.exit(1);
+        throw error;
     }
 };
 
-seedMcqs();
+export { seedMcqs };
+
+// Run directly when called via `node scripts/seedMcq.js`
+const isMain = process.argv[1]?.endsWith('seedMcq.js');
+if (isMain) {
+    seedMcqs().then(() => process.exit(0)).catch(() => process.exit(1));
+}
