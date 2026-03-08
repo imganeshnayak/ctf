@@ -94,8 +94,10 @@ export const validateKey = async (req, res) => {
             });
         }
 
-        // Validate key (case-insensitive)
-        const isCorrect = submittedKey.trim().toLowerCase() === stage.correctKey.toLowerCase();
+        // Validate key (normalized: lowercase and no whitespace)
+        const normalizedSubmitted = submittedKey.replace(/\s+/g, '').toLowerCase();
+        const normalizedCorrect = stage.correctKey.replace(/\s+/g, '').toLowerCase();
+        const isCorrect = normalizedSubmitted === normalizedCorrect;
 
         if (isCorrect) {
             // Check if already completed
