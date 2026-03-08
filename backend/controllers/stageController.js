@@ -58,6 +58,7 @@ export const getAllStages = async (req, res) => {
                 difficulty: stage.difficulty,
                 challengeContent: challengeContent,
                 hints: stage.hints,
+                mcq: stage.mcq,
                 points: stage.points,
                 locked: false,  // All stages are unlocked
                 completed: isCompleted,
@@ -191,3 +192,55 @@ export const unlockHint = async (req, res) => {
         });
     }
 };
+
+// Submit MCQ answer for bonus points
+export const submitMcq = async (req, res) => {
+    try {
+        const { userId, selectedIndex } = req.body;
+        const stageId = req.params.id;
+
+        const stage = await Stage.findById(stageId);
+        const user = await User.findById(userId);
+
+        if (!stage || !user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Stage or user not found'
+            });
+        }
+
+        // Guard: MCQ bonus can only be won once per stage
+        if (user.mcqBonusStages.includes(stage.stageNumber)) {
+            return res.status(200).json({
+                success: true,
+                correct: false,
+                bonusPoints: 0,
+                totalScore: user.totalScore,
+                message: 'MCQ bonus already claimed for this stage.'
+            });
+        }
+
+        const isCorrect = selectedIndex === stage.mcq.correctIndex;
+        let bonusPoints = 0;
+
+        if (isCorrect) {
+            bonusPoints = 100;
+            user.totalScore += bonusPoints;
+            user.mcqBonusStages.push(stage.stageNumber);
+            await user.save();
+        }
+
+        res.status(200).json({
+            success: true,
+            correct: isCorrect,
+            bonusPoints,
+            totalScore: user.totalScore
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+

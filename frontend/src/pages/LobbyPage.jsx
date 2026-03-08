@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './LobbyPage.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://ctf-zubh.onrender.com';
 
 /* ── Deterministic hash helpers ─────────────────────────────────────── */
 function hashStr(s, seed = 31) {

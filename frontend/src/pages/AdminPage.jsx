@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './AdminPage.css';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://ctf-zubh.onrender.com';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -32,7 +32,7 @@ export default function AdminPage() {
           setParticipants(data.users || []);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => socket.disconnect();
   }, [authed]);
 

@@ -38,7 +38,11 @@ const userSchema = new mongoose.Schema({
     },
     hintUsedStages: [{
         type: Number
+    }],
+    mcqBonusStages: [{
+        type: Number
     }]
+
 }, {
     timestamps: true
 });

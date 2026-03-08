@@ -1,0 +1,333 @@
+/* ── MCQModal.css ── Premium post-stage bonus MCQ overlay ── */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Share+Tech+Mono&display=swap');
+
+.mcq-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(3, 6, 18, 0.85);
+    backdrop-filter: blur(14px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: mcqFadeIn 0.3s ease;
+}
+
+@keyframes mcqFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ── Main card ── */
+.mcq-card {
+    background: rgba(8, 14, 34, 0.95);
+    border: 1px solid rgba(0, 245, 212, 0.18);
+    border-radius: 24px;
+    padding: 2.5rem 2.8rem;
+    max-width: 560px;
+    width: 93%;
+    text-align: center;
+    position: relative;
+    box-shadow:
+        0 0 80px rgba(0, 245, 212, 0.07),
+        0 30px 60px rgba(0, 0, 0, 0.5);
+    animation: mcqCardIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: 'Outfit', sans-serif;
+}
+
+@keyframes mcqCardIn {
+    from {
+        opacity: 0;
+        transform: scale(0.88) translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.mcq-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 245, 212, 0.5), transparent);
+    border-radius: 24px 24px 0 0;
+}
+
+/* ── Timer ring ── */
+.mcq-timer-wrap {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+}
+
+.mcq-timer-ring {
+    width: 64px;
+    height: 64px;
+    transform: rotate(-90deg);
+}
+
+.mcq-ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 4;
+}
+
+.mcq-ring-fill {
+    fill: none;
+    stroke: #00f5d4;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+}
+
+.mcq-ring-fill--urgent {
+    stroke: #f43f5e;
+    animation: urgentPulse 0.5s ease infinite alternate;
+}
+
+@keyframes urgentPulse {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.5;
+    }
+}
+
+.mcq-time-num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #00f5d4;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mcq-time-urgent {
+    color: #f43f5e;
+}
+
+/* ── Labels ── */
+.mcq-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    background: linear-gradient(135deg, #00f5d4, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mcq-stage-label {
+    font-size: 0.75rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mcq-question {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #f0f9ff;
+    line-height: 1.5;
+    margin: 0 0 1.6rem;
+}
+
+/* ── Options ── */
+.mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
+}
+
+.mcq-option {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mcq-option:hover {
+    background: rgba(0, 245, 212, 0.06);
+    border-color: rgba(0, 245, 212, 0.2);
+    color: #f0f9ff;
+}
+
+.mcq-option--selected {
+    background: rgba(0, 245, 212, 0.1) !important;
+    border-color: rgba(0, 245, 212, 0.5) !important;
+    color: #f0f9ff !important;
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.08);
+}
+
+.mcq-option-letter {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: rgba(124, 58, 237, 0.18);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #7c3aed;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mcq-option--selected .mcq-option-letter {
+    background: rgba(0, 245, 212, 0.2);
+    border-color: rgba(0, 245, 212, 0.5);
+    color: #00f5d4;
+}
+
+/* ── Actions ── */
+.mcq-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+}
+
+.mcq-skip-btn {
+    padding: 0.65rem 1.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+}
+
+.mcq-skip-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #94a3b8;
+}
+
+.mcq-submit-btn {
+    padding: 0.65rem 1.8rem;
+    border: 1px solid rgba(0, 245, 212, 0.1);
+    border-radius: 10px;
+    background: rgba(0, 245, 212, 0.06);
+    color: #475569;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: not-allowed;
+    transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+}
+
+.mcq-submit-btn--active {
+    background: linear-gradient(135deg, rgba(0, 245, 212, 0.15), rgba(124, 58, 237, 0.15));
+    border-color: rgba(0, 245, 212, 0.4);
+    color: #00f5d4;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 245, 212, 0.1);
+}
+
+.mcq-submit-btn--active:hover {
+    background: linear-gradient(135deg, rgba(0, 245, 212, 0.22), rgba(124, 58, 237, 0.22));
+    box-shadow: 0 0 30px rgba(0, 245, 212, 0.2);
+}
+
+.mcq-info {
+    font-size: 0.68rem;
+    color: #334155;
+    margin-top: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+/* ── Result card ── */
+.mcq-result-card {
+    background: rgba(8, 14, 34, 0.97);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
+    animation: mcqCardIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid transparent;
+    font-family: 'Outfit', sans-serif;
+}
+
+.mcq-result--correct {
+    border-color: rgba(0, 245, 212, 0.3);
+    box-shadow: 0 0 60px rgba(0, 245, 212, 0.12);
+}
+
+.mcq-result--wrong {
+    border-color: rgba(244, 63, 94, 0.2);
+    box-shadow: 0 0 40px rgba(244, 63, 94, 0.08);
+}
+
+.mcq-result-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.8rem;
+    animation: iconBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes iconBounce {
+    from {
+        transform: scale(0) rotate(-20deg);
+    }
+
+    to {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.mcq-result-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f0f9ff;
+    margin: 0 0 0.5rem;
+}
+
+.mcq-result-bonus {
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00f5d4, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 12px rgba(0, 245, 212, 0.3));
+}
+
+.mcq-result-sub {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0;
+}

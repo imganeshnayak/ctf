@@ -4,9 +4,10 @@ import '../App.css';
 import StageCard from '../components/StageCard';
 import ChallengeModal from '../components/ChallengeModal';
 import ProgressBar from '../components/ProgressBar';
+import MCQModal from '../components/MCQModal';
 import { createOrGetUser, getAllStages, validateStageKey } from '../services/api';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'https://ctf-zubh.onrender.com';
 
 function Challenges() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ function Challenges() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ctfGuardChecked, setCtfGuardChecked] = useState(false);
+    const [mcqStage, setMcqStage] = useState(null); // stage to show MCQ for
 
     // Guard: if CTF has not started, bounce non-admin back to lobby
     useEffect(() => {
@@ -95,6 +97,9 @@ function Challenges() {
             );
 
             if (response.success) {
+                // Check if this was a new completion (not already done)
+                const wasAlreadyCompleted = user.completedStages?.includes(selectedStage.stageNumber);
+
                 // Update user data
                 const updatedUser = {
                     ...user,
@@ -107,6 +112,14 @@ function Challenges() {
 
                 // Reload stages to update locked/unlocked status
                 await loadStages();
+
+                // Show MCQ only if this was a fresh completion and the stage has MCQ data
+                if (!wasAlreadyCompleted && selectedStage.mcq?.question) {
+                    setSelectedStage(null);
+                    setMcqStage(selectedStage);
+                } else {
+                    setSelectedStage(null);
+                }
 
                 return {
                     type: 'success',
@@ -237,6 +250,14 @@ function Challenges() {
                         onClose={() => setSelectedStage(null)}
                         onSubmit={handleKeySubmit}
                         isSubmitting={isSubmitting}
+                    />
+                )}
+
+                {mcqStage && (
+                    <MCQModal
+                        stage={mcqStage}
+                        userId={user?._id}
+                        onClose={() => setMcqStage(null)}
                     />
                 )}
             </div>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ctf-zubh.onrender.com/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -47,6 +47,15 @@ export const unlockHint = async (stageId, userId) => {
     });
     return response.data;
 };
+
+export const submitMcqAnswer = async (stageId, userId, selectedIndex) => {
+    const response = await api.post(`/stages/${stageId}/mcq`, {
+        userId,
+        selectedIndex
+    });
+    return response.data;
+};
+
 
 // Leaderboard endpoints
 export const getLeaderboard = async () => {

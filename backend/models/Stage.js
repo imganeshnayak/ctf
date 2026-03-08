@@ -30,10 +30,16 @@ const stageSchema = new mongoose.Schema({
     hints: [{
         type: String
     }],
+    mcq: {
+        question: { type: String, default: '' },
+        options: [{ type: String }],
+        correctIndex: { type: Number, default: 0 }
+    },
     points: {
         type: Number,
         default: 100
     }
+
 }, {
     timestamps: true
 });
