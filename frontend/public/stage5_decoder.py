@@ -1,85 +1,93 @@
 #!/usr/bin/env python3
 """
-Stage 5 - CTF Flag Decoder
-This script generates the final flag when you provide the first part.
+THE PHILOSOPHER'S ENGINE - STAGE 5 DECODER
+Auth: Digital Alchemy Society
 """
 
 import hashlib
-import base64
+import time
+import sys
 
-def decode_flag(first_part):
+def progress_bar(seconds, message="Stabilizing Elemental Matrix"):
+    """Displays a thematic progress bar for the requested duration."""
+    width = 40
+    for i in range(width + 1):
+        percent = int((i / width) * 100)
+        bar = "█" * i + "░" * (width - i)
+        sys.stdout.write(f"\r{message: <30} [{bar}] {percent}%")
+        sys.stdout.flush()
+        time.sleep(seconds / width)
+    print()
+
+def transmute(input_key):
     """
-    Decodes and generates the complete flag.
-    The first part should be found in the HTML page.
+    Verifies the input key and transmutes it into the final flag.
+    Input: Intermediate Key from HTML.
+    Output: Final Flag.
     """
-    # Check if the first part is correct
-    expected_hash = "99a9aa6b77293189b73ac7cea487fc641976646ef9d979791928cdaa29ed8e7124a2e07767734f43623f1ceb029fc8a131669947cfd547166734d12f29fb6350"
+    # SHA-512 of 'PHILOSOPHERS_STONE_DECODED'
+    EXPECTED_HASH = "bf0f45050f8c5ad9efe0e8b109c0d66f3cb9f8d3df50b2f83ea879be567aed01a0b1010a211861df8457b3e1cf9072816aba386da5bfdd909230b5c90dd40a97"
     
-    # Hash the input to verify
-    input_hash = hashlib.sha512(first_part.strip().upper().encode()).hexdigest()
+    # Hash the input
+    input_hash = hashlib.sha512(input_key.strip().upper().encode()).hexdigest()
     
-    if input_hash != expected_hash:
-        print("❌ Incorrect first part! Keep searching in the HTML...")
+    if input_hash != EXPECTED_HASH:
+        print("\n\033[91m[!] ERROR: IMPURE CATALYST DETECTED\033[0m")
+        print("[*] The fragments do not align. Transmutation failed.")
+        print("[*] Entering 25s Elemental Stabilization Delay to prevent data corruption...")
+        progress_bar(25, "Elemental Stabilization")
+        print("\n[!] Access Denied. Return to the Archive and seek the Three Pillars.")
         return None
+
+    # Successful verification
+    print("\n\033[93m[+] CATALYST ACCEPTED: Intermediate Key Verified.\033[0m")
+    progress_bar(3, "Commencing Great Work")
     
-    # If correct, generate the second part
-    print("✅ First part is correct!")
-    print("\n🔓 Decoding the second part...\n")
-    
-    # The second part is encoded
-    encoded_second = "X0NIQVVQSU9O"  # Base64 encoded "_CHAMPION"
-    second_part = base64.b64decode(encoded_second).decode()
-    
-    # Combine to create the final flag
-    final_flag = first_part.strip().upper() + second_part
+    # The final flag is generated here
+    # In a real challenge, this could be complex XOR, but for this CTF:
+    final_flag = "GOLDEN_RATIO_REVEALED"
     
     return final_flag
 
-
 def main():
-    print("=" * 60)
-    print("🐍 STAGE 5 - PYTHON FLAG DECODER")
-    print("=" * 60)
-    print()
-    print("Welcome! You've found the Python script.")
-    print("To get the complete flag, you need the FIRST PART")
-    print("which is hidden in the Stage 5 HTML page.")
-    print()
-    print("💡 Hint: Inspect the HTML source code carefully!")
-    print("         Look for hidden elements or data attributes...")
-    print()
+    print("""
+    \033[93m
+     .      .
+     |\\____/|
+    (\033[0m\033[91m  o  o  \033[0m\033[93m)
+     {  \033[91m^^\033[0m\033[93m  }
+      \\____/
+       |  |  \033[0m
+    \033[93m============================================================
+    ||             THE PHILOSOPHER'S ENGINE v1.0.4            ||
+    ||           (Digital Alchemy Security Protocol)           ||
+    ============================================================\033[0m
+    """)
+    
+    print("Welcome, Alchemist.")
+    print("Provide the intermediate key found within the Archive fragments.")
+    print("Warning: Only the pure of intent shall pass.")
     print("-" * 60)
-    print()
     
-    # Ask for the first part
-    first_part = input("Enter the FIRST PART of the flag: ")
-    
-    print()
-    print("🔍 Verifying your input...")
-    print()
-    
-    # Decode the flag
-    final_flag = decode_flag(first_part)
-    
-    if final_flag:
-        print("=" * 60)
-        print("🎉 SUCCESS! Here is your complete flag:")
-        print()
-        print(f"    🏆 {final_flag} 🏆")
-        print()
-        print("=" * 60)
-        print()
-        print("Congratulations! Submit this flag to complete Stage 5!")
-        print()
-    else:
-        print()
-        print("💭 Need help?")
-        print("   - Make sure you're looking at the Stage 5 HTML page")
-        print("   - Use browser DevTools to inspect elements")
-        print("   - Look for elements with 'display: none'")
-        print("   - Check data attributes on hidden elements")
-        print()
-
+    try:
+        user_input = input("\n[#] ENTER TRANSMUTATION KEY: ").strip()
+        
+        print("\n[*] Validating catalytic properties...")
+        time.sleep(1)
+        
+        flag = transmute(user_input)
+        
+        if flag:
+            print("\n" + "="*60)
+            print("\033[92m🎉 TRANSMUTATION COMPLETE! THE TRUE REVELATION IS ACHIEVED: \033[0m")
+            print(f"\n      \033[96m>>> {flag} <<<\033[0m")
+            print("\n" + "="*60)
+            print("Submit this revelation to the Council to complete Stage 5.")
+            print()
+            
+    except KeyboardInterrupt:
+        print("\n\n[!] Process interrupted. The Archive remains sealed.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

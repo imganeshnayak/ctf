@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 11: The Architect's Algorithm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #0a0e1a;
+            color: #e5e7eb;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.5;
+            height: 100vh;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header row */
+        .page-header {
+            text-align: center;
+            padding-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .page-header h1 {
+            color: #a78bfa;
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .page-header .subtitle {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        /* === Main two-column layout === */
+        .main-layout {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+            /* allow flex children to shrink */
+        }
+
+        /* Left Panel: Assembly + Input + Execute + Output */
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+            overflow-y: auto;
+        }
+
+        /* Right Panel: Fragment Pool + Rules */
+        .right-panel {
+            width: 420px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        /* Info panel (story) */
+        .info-panel {
+            background: linear-gradient(90deg, #1a1a2e 0%, #2d1b4e 100%);
+            border-left: 4px solid #a78bfa;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            flex-shrink: 0;
+        }
+
+        .info-panel p {
+            margin-bottom: 4px;
+        }
+
+        /* === Assembly Area === */
+        .assembly-area {
+            background: #0f0f23;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 14px 18px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .assembly-title {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            flex-shrink: 0;
+        }
+
+        .slots-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 0;
+        }
+
+        .slot-row {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .slot-label {
+            font-size: 0.75em;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 3px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .slot-label.import-label {
+            color: #3498db;
+        }
+
+        .slot-label.def-label {
+            color: #e74c3c;
+        }
+
+        .slot-label.logic-label {
+            color: #f39c12;
+        }
+
+        .slot-label.return-label {
+            color: #27ae60;
+        }
+
+        .drop-zone {
+            flex: 1;
+            min-height: 36px;
+            background: #1a2332;
+            border: 2px dashed #444;
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.25s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .drop-zone.import-zone {
+            border-color: #3498db;
+        }
+
+        .drop-zone.def-zone {
+            border-color: #e74c3c;
+        }
+
+        .drop-zone.logic-zone {
+            border-color: #f39c12;
+        }
+
+        .drop-zone.return-zone {
+            border-color: #27ae60;
+        }
+
+        .drop-zone .placeholder {
+            color: #555;
+            font-style: italic;
+            font-size: 0.85em;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.06);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+        }
+
+        .drop-zone.reject {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.04);
+        }
+
+        /* === Bottom bar: Seed + Execute === */
+        .bottom-bar {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            flex-shrink: 0;
+        }
+
+        .input-area {
+            flex: 1;
+            background: #1a2332;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .input-area label {
+            color: #888;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.8em;
+        }
+
+        #seed-input {
+            width: 100%;
+            padding: 10px;
+            background: #0f0f23;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        #seed-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+
+        .hint-text {
+            font-size: 0.72em;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        #execute-btn {
+            width: 160px;
+            flex-shrink: 0;
+            padding: 10px 16px;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            color: #0a0e1a;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #execute-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        #execute-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Output — sits below bottom bar */
+        #output-area {
+            padding: 12px 16px;
+            background: #0f0f23;
+            border-radius: 8px;
+            border: 1px solid #2d3748;
+            flex-shrink: 0;
+            display: none;
+        }
+
+        #output-area .output-label {
+            color: #888;
+            margin-bottom: 6px;
+            font-size: 0.85em;
+        }
+
+        #output-content {
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            font-size: 1.05em;
+            word-break: break-all;
+        }
+
+        /* === Right Panel: Fragment Pool === */
+        .pool-area {
+            background: #0d1117;
+            border: 1px solid #2d3748;
+            border-radius: 10px;
+            padding: 14px 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .pool-title {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            flex-shrink: 0;
+        }
+
+        .pool-sections {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .pool-section {
+            margin-bottom: 12px;
+        }
+
+        .pool-section-label {
+            font-size: 0.72em;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pool-fragments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .code-fragment {
+            color: white;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: grab;
+            user-select: none;
+            font-family: 'Courier New', monospace;
+            font-size: 0.78em;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .code-fragment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .code-fragment:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+            z-index: 100;
+        }
+
+        .code-fragment.dragging {
+            opacity: 0.35;
+        }
+
+        .frag-import {
+            background: #3498db;
+        }
+
+        .frag-def {
+            background: #e74c3c;
+        }
+
+        .frag-logic {
+            background: #f39c12;
+        }
+
+        .frag-return {
+            background: #27ae60;
+        }
+
+        /* Instructions & Rules in right panel */
+        .instructions-compact {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 10px 14px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            font-size: 0.82em;
+        }
+
+        .instructions-compact ol {
+            padding-left: 18px;
+            color: #ccc;
+            margin-top: 4px;
+        }
+
+        .instructions-compact li {
+            margin-bottom: 3px;
+        }
+
+        .rules-box {
+            background: #2c1a1a;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            flex-shrink: 0;
+            font-size: 0.82em;
+        }
+
+        .rules-box ul {
+            padding-left: 18px;
+            color: #ccc;
+        }
+
+        .rules-box li {
+            margin-bottom: 2px;
+        }
+
+        /* Responsive — stack on narrow screens */
+        @media (max-width: 900px) {
+
+            html,
+            body {
+                overflow: auto;
+            }
+
+            body {
+                height: auto;
+            }
+
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .right-panel {
+                width: 100%;
+            }
+
+            .code-fragment {
+                font-size: 0.72em;
+                padding: 6px 8px;
+                white-space: normal;
+            }
+        }
+
+        /* Protection Styles */
+        @media print {
+            body {
+                display: none !important;
+            }
+        }
+
+        .content-protected {
+            transition: filter 0.3s ease;
+        }
+
+        .content-blurred {
+            filter: blur(15px) grayscale(100%);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .protection-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(10, 14, 26, 0.8);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ff4d4d;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .protection-overlay.visible {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="content-protected">
+    <div class="protection-overlay" id="protection-overlay">
+        <div>🔒 SECURITY ALERT<br><span style="font-size: 0.9rem; color: #888;">CONTENT HIDDEN TO PREVENT CAPTURE</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>🧩 The Architect's Algorithm</h1>
+        <p class="subtitle">Stage 11 — Assemble the machine. Feed it the truth.</p>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="main-layout">
+
+        <!-- LEFT: Assembly + Seed + Execute + Output -->
+        <div class="left-panel">
+
+            <!-- Story blurb -->
+            <div class="info-panel">
+                <p><strong>🔧 The Incomplete Machine:</strong> The Architect left behind a cryptographic key generator,
+                    but the code was shattered. Reassemble it, provide the correct input, and generate the master key.
+                </p>
+            </div>
+
+            <!-- Assembly Slots -->
+            <div class="assembly-area">
+                <p class="assembly-title">📝 CODE ASSEMBLY:</p>
+                <div class="slots-container">
+                    <div class="slot-row">
+                        <p class="slot-label import-label">LINE 1: [IMPORTS]</p>
+                        <div class="drop-zone import-zone" data-slot="import" data-accept="import">
+                            <span class="placeholder">Drop import statement here...</span>
+                        </div>
+                    </div>
+                    <div class="slot-row">
+                        <p class="slot-label def-label">LINE 2: [FUNCTION DEFINITION]</p>
+                        <div class="drop-zone def-zone" data-slot="def" data-accept="def">
+                            <span class="placeholder">Drop function definition here...</span>
+                        </div>
+                    </div>
+                    <div class="slot-row">
+                        <p class="slot-label logic-label">LINE 3: [CORE LOGIC — SALT]</p>
+                        <div class="drop-zone logic-zone" data-slot="logic1" data-accept="logic">
+                            <span class="placeholder">Drop salt logic here...</span>
+                        </div>
+                    </div>
+                    <div class="slot-row">
+                        <p class="slot-label logic-label">LINE 4: [CORE LOGIC — HASH]</p>
+                        <div class="drop-zone logic-zone" data-slot="logic2" data-accept="logic">
+                            <span class="placeholder">Drop hash logic here...</span>
+                        </div>
+                    </div>
+                    <div class="slot-row">
+                        <p class="slot-label logic-label">LINE 5: [CORE LOGIC — KEY BUILD]</p>
+                        <div class="drop-zone logic-zone" data-slot="logic3" data-accept="logic">
+                            <span class="placeholder">Drop key-build logic here...</span>
+                        </div>
+                    </div>
+                    <div class="slot-row">
+                        <p class="slot-label return-label">LINE 6: [RETURN STATEMENT]</p>
+                        <div class="drop-zone return-zone" data-slot="return" data-accept="return">
+                            <span class="placeholder">Drop return statement here...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seed + Execute in one row -->
+            <div class="bottom-bar">
+                <div class="input-area">
+                    <label>🌱 SEED INPUT:</label>
+                    <input type="text" id="seed-input" placeholder="Enter seed (YYYY-MM-DD)...">
+                    <p class="hint-text">💡 The Architect always used today's date as his master seed</p>
+                </div>
+                <button id="execute-btn">⚡ EXECUTE<br>ALGORITHM</button>
+            </div>
+
+            <!-- Output -->
+            <div id="output-area">
+                <p class="output-label">🔮 OUTPUT:</p>
+                <div id="output-content"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Fragment Pool + Instructions + Rules -->
+        <div class="right-panel">
+
+            <!-- Instructions -->
+            <div class="instructions-compact">
+                <p><strong>📋 Instructions:</strong></p>
+                <ol>
+                    <li>Drag fragments from below into the slots on the left</li>
+                    <li>Each slot accepts only matching types (color-coded)</li>
+                    <li>Enter the <strong>Seed</strong> and click <strong>EXECUTE</strong></li>
+                    <li>Click a filled slot to return the fragment to the pool</li>
+                </ol>
+            </div>
+
+            <!-- Fragment Pool -->
+            <div class="pool-area">
+                <p class="pool-title">🔀 FRAGMENT POOL:</p>
+                <div class="pool-sections">
+                    <div class="pool-section">
+                        <p class="pool-section-label">Imports (Blue)</p>
+                        <div class="pool-fragments">
+                            <div class="code-fragment frag-import" draggable="true" data-type="import"
+                                data-code="import hashlib">import hashlib</div>
+                            <div class="code-fragment frag-import" draggable="true" data-type="import"
+                                data-code="import random">import random</div>
+                            <div class="code-fragment frag-import" draggable="true" data-type="import"
+                                data-code="import base64">import base64</div>
+                        </div>
+                    </div>
+                    <div class="pool-section">
+                        <p class="pool-section-label">Definitions (Red)</p>
+                        <div class="pool-fragments">
+                            <div class="code-fragment frag-def" draggable="true" data-type="def"
+                                data-code="def generate_key(seed):">def generate_key(seed):</div>
+                            <div class="code-fragment frag-def" draggable="true" data-type="def"
+                                data-code="def create_hash(input_str):">def create_hash(input_str):</div>
+                            <div class="code-fragment frag-def" draggable="true" data-type="def"
+                                data-code="def encode_data(data):">def encode_data(data):</div>
+                        </div>
+                    </div>
+                    <div class="pool-section">
+                        <p class="pool-section-label">Logic (Orange)</p>
+                        <div class="pool-fragments">
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="salted = seed + ARCHITECT_SALT_2026">salted = seed +
+                                "ARCHITECT_SALT_2026"</div>
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="hashed = hashlib.sha256(salted.encode()).hexdigest()">hashed =
+                                hashlib.sha256(...).hexdigest()</div>
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="key = KEY_ + hashed[::-1][:16].upper()">key = "KEY_" +
+                                hashed[::-1][:16].upper()</div>
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="reversed_hash = hashed[::-1]">reversed_hash = hashed[::-1]</div>
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="final = base64.b64encode(key.encode()).decode()">final =
+                                base64.b64encode(...).decode()</div>
+                            <div class="code-fragment frag-logic" draggable="true" data-type="logic"
+                                data-code="checksum = sum(ord(c) for c in key) % 256">checksum = sum(ord(c) for c in
+                                key) % 256</div>
+                        </div>
+                    </div>
+                    <div class="pool-section">
+                        <p class="pool-section-label">Returns (Green)</p>
+                        <div class="pool-fragments">
+                            <div class="code-fragment frag-return" draggable="true" data-type="return"
+                                data-code="return key">return key</div>
+                            <div class="code-fragment frag-return" draggable="true" data-type="return"
+                                data-code="return final + _ + str(checksum)">return final + "_" + str(checksum)</div>
+                            <div class="code-fragment frag-return" draggable="true" data-type="return"
+                                data-code="return hashed">return hashed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="rules-box">
+                <p><strong>⚠️ Validation Rules:</strong></p>
+                <ul>
+                    <li>Correct assembly + correct seed = Valid key</li>
+                    <li>Wrong assembly = Syntax error / garbage</li>
+                    <li>Correct assembly + wrong seed = Wrong key</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // ===== DRAG & DROP =====
+            const dropZones = document.querySelectorAll('.drop-zone');
+            const fragments = document.querySelectorAll('.code-fragment');
+            let draggingEl = null;
+
+            // Drag start
+            fragments.forEach(frag => {
+                frag.addEventListener('dragstart', (e) => {
+                    draggingEl = frag;
+                    frag.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', frag.dataset.code);
+                    e.dataTransfer.setData('frag-type', frag.dataset.type);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                frag.addEventListener('dragend', () => {
+                    frag.classList.remove('dragging');
+                    draggingEl = null;
+                    dropZones.forEach(z => {
+                        z.classList.remove('drag-over');
+                        z.classList.remove('reject');
+                    });
+                });
+            });
+
+            // Drop zones
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    zone.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                    zone.classList.remove('reject');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+
+                    const fragType = e.dataTransfer.getData('frag-type');
+                    const acceptType = zone.dataset.accept;
+
+                    // Type mismatch → reject flash
+                    if (fragType !== acceptType) {
+                        zone.classList.add('reject');
+                        setTimeout(() => zone.classList.remove('reject'), 600);
+                        return;
+                    }
+
+                    // If zone already has a fragment, return it to pool
+                    const existing = zone.querySelector('.code-fragment');
+                    if (existing) {
+                        returnToPool(existing);
+                    }
+
+                    // Place fragment
+                    if (draggingEl) {
+                        draggingEl.classList.remove('dragging');
+                        const placeholder = zone.querySelector('.placeholder');
+                        if (placeholder) placeholder.remove();
+                        zone.appendChild(draggingEl);
+                        zone.classList.add('filled');
+                    }
+                });
+
+                // Click to return to pool
+                zone.addEventListener('click', () => {
+                    const placed = zone.querySelector('.code-fragment');
+                    if (placed) {
+                        returnToPool(placed);
+                        zone.classList.remove('filled');
+                        if (!zone.querySelector('.placeholder')) {
+                            const span = document.createElement('span');
+                            span.className = 'placeholder';
+                            span.textContent = 'Drop fragment here...';
+                            zone.appendChild(span);
+                        }
+                    }
+                });
+            });
+
+            function returnToPool(frag) {
+                const type = frag.dataset.type;
+                const sections = document.querySelectorAll('.pool-fragments');
+                // Find correct section by looking at first child's type
+                for (const sec of sections) {
+                    const first = sec.querySelector('.code-fragment');
+                    if (first && first.dataset.type === type) {
+                        sec.appendChild(frag);
+                        return;
+                    }
+                    if (!first) {
+                        // Empty section — check label
+                        const label = sec.previousElementSibling;
+                        if (label) {
+                            const text = label.textContent.toLowerCase();
+                            if ((type === 'import' && text.includes('import')) ||
+                                (type === 'def' && text.includes('definition')) ||
+                                (type === 'logic' && text.includes('logic')) ||
+                                (type === 'return' && text.includes('return'))) {
+                                sec.appendChild(frag);
+                                return;
+                            }
+                        }
+                    }
+                }
+                // Fallback: append to first pool-fragments
+                sections[0]?.appendChild(frag);
+            }
+
+            // ===== TOUCH SUPPORT (Mobile) =====
+            let touchEl = null;
+            let touchClone = null;
+
+            fragments.forEach(frag => {
+                frag.addEventListener('touchstart', (e) => {
+                    touchEl = frag;
+                    touchClone = frag.cloneNode(true);
+                    touchClone.style.position = 'fixed';
+                    touchClone.style.pointerEvents = 'none';
+                    touchClone.style.opacity = '0.75';
+                    touchClone.style.zIndex = '9999';
+                    touchClone.style.transform = 'scale(1.05)';
+                    document.body.appendChild(touchClone);
+                    frag.classList.add('dragging');
+                }, { passive: true });
+
+                frag.addEventListener('touchmove', (e) => {
+                    if (touchClone) {
+                        const t = e.touches[0];
+                        touchClone.style.left = (t.clientX - 50) + 'px';
+                        touchClone.style.top = (t.clientY - 18) + 'px';
+                    }
+                    e.preventDefault();
+                }, { passive: false });
+
+                frag.addEventListener('touchend', (e) => {
+                    if (touchClone) {
+                        document.body.removeChild(touchClone);
+                        touchClone = null;
+                    }
+                    if (touchEl) {
+                        touchEl.classList.remove('dragging');
+                        const t = e.changedTouches[0];
+                        const el = document.elementFromPoint(t.clientX, t.clientY);
+                        const zone = el?.closest('.drop-zone');
+                        if (zone && touchEl.dataset.type === zone.dataset.accept) {
+                            const existing = zone.querySelector('.code-fragment');
+                            if (existing) returnToPool(existing);
+                            const placeholder = zone.querySelector('.placeholder');
+                            if (placeholder) placeholder.remove();
+                            zone.appendChild(touchEl);
+                            zone.classList.add('filled');
+                        }
+                        touchEl = null;
+                    }
+                });
+            });
+
+            // ===== EXECUTE =====
+            document.getElementById('execute-btn').addEventListener('click', async () => {
+                const outputArea = document.getElementById('output-area');
+                const outputContent = document.getElementById('output-content');
+                const seedInput = document.getElementById('seed-input');
+
+                outputArea.style.display = 'block';
+
+                // Gather placed fragments
+                const slots = ['import', 'def', 'logic1', 'logic2', 'logic3', 'return'];
+                const placed = {};
+                let allFilled = true;
+
+                slots.forEach(slotName => {
+                    const zone = document.querySelector('.drop-zone[data-slot="' + slotName + '"]');
+                    const frag = zone?.querySelector('.code-fragment');
+                    if (frag) {
+                        placed[slotName] = frag.dataset.code || frag.textContent.trim();
+                    } else {
+                        allFilled = false;
+                    }
+                });
+
+                if (!allFilled) {
+                    outputContent.style.color = '#e74c3c';
+                    outputContent.innerHTML = '❌ ERROR: All logic slots must be filled before execution.';
+                    return;
+                }
+
+                const seed = seedInput?.value?.trim();
+                if (!seed) {
+                    outputContent.style.color = '#e74c3c';
+                    outputContent.innerHTML = '❌ ERROR: Seed input is required.';
+                    return;
+                }
+
+                // Validate correct assembly
+                const correctOrder = [
+                    'import hashlib',
+                    'def generate_key(seed):',
+                    'salted = seed + ARCHITECT_SALT_2026',
+                    'hashed = hashlib.sha256(salted.encode()).hexdigest()',
+                    'key = KEY_ + hashed[::-1][:16].upper()',
+                    'return key'
+                ];
+
+                const userOrder = slots.map(s => placed[s]);
+                const isCorrect = userOrder.every((code, i) => code === correctOrder[i]);
+
+                if (!isCorrect) {
+                    const garbage = Array.from({ length: 32 }, () =>
+                        '0123456789abcdef!@#$%'[Math.floor(Math.random() * 21)]
+                    ).join('');
+                    outputContent.style.color = '#e74c3c';
+                    outputContent.innerHTML =
+                        '<span style="color:#e74c3c">⚠️ SYNTAX ERROR: Assembly invalid</span><br><br>' +
+                        '<span style="color:#666">Debug output: ' + garbage + '</span><br>' +
+                        '<span style="color:#888; font-size:0.85em">Check your fragment order and try again.</span>';
+                    return;
+                }
+
+                // Correct assembly — compute key
+                outputContent.style.color = '#f39c12';
+                outputContent.innerHTML = '⏳ Compiling... executing algorithm...';
+
+                setTimeout(async () => {
+                    try {
+                        const salted = seed + 'ARCHITECT_SALT_2026';
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(salted);
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        const hashed = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                        const reversed = hashed.split('').reverse().join('');
+                        const key = 'KEY_' + reversed.substring(0, 16).toUpperCase();
+
+                        outputContent.style.color = '#00ff88';
+                        outputContent.innerHTML =
+                            '✅ Execution successful!<br><br>' +
+                            '<span style="font-size:1.5em; color:#00ff88; text-shadow:0 0 15px #00ff88;">' + key + '</span><br><br>' +
+                            '<span style="color:#888; font-size:0.85em;">Copy this key and submit it as your flag on the main challenge page.</span>';
+                    } catch (err) {
+                        outputContent.style.color = '#e74c3c';
+                        outputContent.innerHTML = '❌ RUNTIME ERROR: ' + err.message;
+                    }
+                }, 1500);
+            });
+
+        })();
+
+        // ===== CONTENT PROTECTION =====
+        (function () {
+            const body = document.body;
+            const overlay = document.getElementById('protection-overlay');
+
+            // 1. Blur on focus loss (Prevents snapshots while alt-tabbing)
+            window.addEventListener('blur', () => {
+                body.classList.add('content-blurred');
+                overlay.classList.add('visible');
+            });
+
+            window.addEventListener('focus', () => {
+                body.classList.remove('content-blurred');
+                overlay.classList.remove('visible');
+            });
+
+            // 2. Disable right-click
+            document.addEventListener('contextmenu', e => e.preventDefault());
+
+            // 3. Disable common screenshot/copy shortcuts
+            document.addEventListener('keydown', e => {
+                // Ctrl+Shift+S (Firefox screenshot), Ctrl+S (Save), Ctrl+C (Copy), Ctrl+U (Source), PrintScreen, Meta+Shift+S
+                if (
+                    (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || (e.shiftKey && e.key === 's'))) ||
+                    e.key === 'PrintScreen' ||
+                    (e.metaKey && e.shiftKey && e.key === 's')
+                ) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

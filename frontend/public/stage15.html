@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHOST SHELL — STAGE 15</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+    }
+
+    /* Scanline effect */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(to bottom,
+          transparent 0px, transparent 3px,
+          rgba(0, 0, 0, 0.15) 3px, rgba(0, 0, 0, 0.15) 4px);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .terminal-wrap {
+      width: min(900px, 98vw);
+      height: min(600px, 94vh);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #0f2a0f;
+      box-shadow: 0 0 60px rgba(0, 180, 60, 0.07), 0 0 0 1px #0a1a0a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* Title bar */
+    .titlebar {
+      background: #0d150d;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #0f2a0f;
+      flex-shrink: 0;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot-r {
+      background: #2a0d0d;
+    }
+
+    .dot-y {
+      background: #2a220d;
+    }
+
+    .dot-g {
+      background: #0d2a0d;
+    }
+
+    .titlebar-label {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: #1a3a1a;
+    }
+
+    /* Output area */
+    #output {
+      flex: 1;
+      overflow-y: auto;
+      background: #030805;
+      padding: 14px 18px;
+      color: #00cc66;
+      font-size: 13px;
+      line-height: 1.65;
+      scroll-behavior: smooth;
+    }
+
+    #output::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #output::-webkit-scrollbar-track {
+      background: #020602;
+    }
+
+    #output::-webkit-scrollbar-thumb {
+      background: #0f300f;
+      border-radius: 3px;
+    }
+
+    .line {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .line.dim {
+      color: #1a4a1a;
+    }
+
+    .line.bright {
+      color: #00ff88;
+    }
+
+    .line.warn {
+      color: #aa6600;
+    }
+
+    .line.error {
+      color: #cc2200;
+    }
+
+    .line.info {
+      color: #0088aa;
+    }
+
+    .line.prompt {
+      color: #00aa44;
+    }
+
+    /* Input row */
+    .input-row {
+      background: #030805;
+      border-top: 1px solid #0a1a0a;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    #ps1 {
+      color: #00aa44;
+      font-size: 13px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    #cmd-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #00ff88;
+      font-family: inherit;
+      font-size: 13px;
+      caret-color: #00ff88;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="terminal-wrap">
+    <div class="titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="titlebar-label">GHOST SHELL v7.3.1 — STAGE 15 — SPECTER PROTOCOL</div>
+    </div>
+
+    <div id="output"></div>
+
+    <div class="input-row">
+      <span id="ps1">ghost@specter:/$ </span>
+      <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" />
+    </div>
+  </div>
+
+  <script>
+    // ── Prevent right-click & common shortcuts ─────────────
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' || (e.ctrlKey && ['u', 'U', 's', 'S'].includes(e.key)) ||
+        (e.ctrlKey && e.shiftKey && ['i', 'I', 'j', 'J', 'c', 'C'].includes(e.key)))
+        e.preventDefault();
+    });
+
+    // ── Virtual Filesystem ─────────────────────────────────
+    const FS = {
+      'README': {
+        type: 'file',
+        content:
+          `GHOST SHELL — AGENT BRIEFING
+[CLASSIFICATION: EYES ONLY]
+
+Agent, you have successfully infiltrated the Specter system.
+A high-priority cipher key exists somewhere on this machine.
+
+Your mission: locate and decrypt the payload.
+All the tools you need are built in.
+
+Start with: ls
+`
+      },
+      'logs': {
+        type: 'dir',
+        children: {
+          'boot.log': {
+            type: 'file',
+            content:
+              `[00:00:01] SPECTER KERNEL v7.3.1 — BOOT INITIATED
+[00:00:02] LOADING CORE MODULES...
+[00:00:04] CIPHER ENGINE ACTIVE: rot-flexible
+[00:00:07] FILESYSTEMS MOUNTED: /etc /logs /vault
+[00:00:09] DECRYPTION TOOL: decode [method] [data]
+[00:00:11] OPERATOR: GHOST AGENT
+[00:00:14] SHELL ACCESS GRANTED — PROCEED CAREFULLY
+`
+          },
+          'access.log': {
+            type: 'file',
+            content:
+              `[SESSION AUDIT LOG]
+2026-03-08 00:10:14 | AGENT connected via secure channel
+2026-03-08 00:10:45 | ls / — OK
+2026-03-08 00:11:02 | Vault access BLOCKED — cipher required
+2026-03-08 00:11:30 | NOTE: cipher parameters stored in /etc/config
+2026-03-08 00:11:55 | NOTE: encoded payload stored in /etc/cipher.dat
+2026-03-08 00:12:01 | SESSION ACTIVITY: monitoring active
+`
+          }
+        }
+      },
+      'etc': {
+        type: 'dir',
+        children: {
+          'config': {
+            type: 'file',
+            content:
+              `# SPECTER SYSTEM CONFIGURATION
+version         = 7.3.1
+mode            = restricted
+operator        = GHOST_AGENT
+cipher_type     = rot
+cipher_shift    = 13
+encoding_target = flag
+max_failures    = 9
+agent_code      = GH057
+`
+          },
+          'cipher.dat': {
+            type: 'file',
+            content:
+              `SPECTER ENCODED PAYLOAD [cipher_type=rot, see config]
+
+FU3YY_ZNFGRE_7
+
+[END OF PAYLOAD — DECODE TO RETRIEVE FLAG]
+`
+          }
+        }
+      },
+      'vault': {
+        type: 'dir',
+        children: {
+          'notice.txt': {
+            type: 'file',
+            content:
+              `VAULT ACCESS: RESTRICTED
+
+This location stores mission-critical decrypted assets.
+Cipher must be resolved before vault entry is granted.
+
+Tip: investigate /logs and /etc directories.
+Tip: use the 'decode' command once you have the cipher parameters.
+`
+          },
+          '.ghost_note': {
+            type: 'file',
+            hidden: true,
+            content:
+              `Well done finding this, ghost.
+
+The payload in /etc/cipher.dat is encoded.
+The encoding method and shift are in /etc/config.
+Combine them. Run the decode command.
+
+You're close.
+`
+          }
+        }
+      }
+    };
+
+    // ── ROT-N function (flag lives here, computed at runtime) ─
+    function rotN(str, n) {
+      return str.replace(/[A-Za-z]/g, c => {
+        const base = c <= 'Z' ? 65 : 97;
+        return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base);
+      });
+    }
+    // rotN('FU3YY_ZNFGRE_7', 13) === 'SH3LL_MASTER_7'
+
+    // ── Terminal state ─────────────────────────────────────
+    let cwd = []; // path segments from FS root
+    let history = [];
+    let histIdx = -1;
+
+    const output = document.getElementById('output');
+    const cmdInput = document.getElementById('cmd-input');
+    const ps1El = document.getElementById('ps1');
+
+    // ── Output helpers ─────────────────────────────────────
+    function print(text, cls = '') {
+      const div = document.createElement('div');
+      div.className = 'line' + (cls ? ' ' + cls : '');
+      div.textContent = text;
+      output.appendChild(div);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function printBlank() { print(''); }
+
+    function updatePrompt() {
+      const path = '/' + cwd.join('/');
+      ps1El.textContent = `ghost@specter:${path}$ `;
+    }
+
+    // ── FS helpers ─────────────────────────────────────────
+    function getNode(pathArr) {
+      let node = FS;
+      for (const seg of pathArr) {
+        if (!node || node.type === 'file') return null;
+        const children = node.type === 'dir' ? node.children : node;
+        if (!children[seg]) return null;
+        node = node.type === 'dir' ? children[seg] : node[seg];
+      }
+      return node;
+    }
+
+    function getCurrentDir() {
+      if (cwd.length === 0) return { type: 'dir', children: FS };
+      let node = FS;
+      for (const seg of cwd) {
+        node = node.children[seg];
+      }
+      return node;
+    }
+
+    function resolvePath(arg) {
+      if (!arg || arg === '/') return [];
+      if (arg.startsWith('/')) {
+        return arg.split('/').filter(Boolean);
+      }
+      // Relative
+      const parts = [...cwd];
+      for (const seg of arg.split('/')) {
+        if (seg === '..') parts.pop();
+        else if (seg && seg !== '.') parts.push(seg);
+      }
+      return parts;
+    }
+
+    // ── Commands ───────────────────────────────────────────
+    const COMMANDS = {
+
+      help() {
+        printBlank();
+        print('AVAILABLE COMMANDS', 'bright');
+        print('──────────────────────────────────', 'dim');
+        print('  ls [-a] [path]         List directory contents');
+        print('  cd <path>              Change directory');
+        print('  cat <file>             Display file contents');
+        print('  pwd                    Print working directory');
+        print('  decode <method> <data> Decode encoded data');
+        print('                         Methods: rot13');
+        print('  clear                  Clear the terminal');
+        print('  help                   Show this help');
+        printBlank();
+      },
+
+      pwd() {
+        print('/' + cwd.join('/'));
+      },
+
+      ls(args) {
+        const showHidden = args.includes('-a');
+        const pathArg = args.find(a => !a.startsWith('-'));
+        const target = pathArg ? resolvePath(pathArg) : cwd;
+        const node = getNode(target);
+
+        if (!node) { print(`ls: cannot access '${pathArg}': No such file or directory`, 'error'); return; }
+        if (node.type === 'file') { print(pathArg || cwd[cwd.length - 1]); return; }
+
+        const children = node.children || node;
+        const entries = Object.entries(children);
+        printBlank();
+
+        let shown = 0;
+        for (const [name, child] of entries) {
+          if (child.hidden && !showHidden) continue;
+          const isDir = child.type === 'dir';
+          const prefix = child.hidden ? '.' : '';
+          print((isDir ? name + '/' : name).padEnd(20) + (isDir ? '<dir>' : '<file>'), isDir ? 'bright' : '');
+          shown++;
+        }
+        if (shown === 0) print('(empty)', 'dim');
+        printBlank();
+      },
+
+      cd(args) {
+        const dest = args[0];
+        if (!dest || dest === '~' || dest === '/') { cwd = []; updatePrompt(); return; }
+
+        const target = resolvePath(dest);
+        const node = getNode(target);
+        if (!node) { print(`cd: no such directory: ${dest}`, 'error'); return; }
+        if (node.type === 'file') { print(`cd: not a directory: ${dest}`, 'error'); return; }
+
+        cwd = target;
+        updatePrompt();
+      },
+
+      cat(args) {
+        const pathArg = args[0];
+        if (!pathArg) { print('Usage: cat <file>', 'warn'); return; }
+
+        const target = resolvePath(pathArg);
+        const node = getNode(target);
+        if (!node) { print(`cat: ${pathArg}: No such file or directory`, 'error'); return; }
+        if (node.type === 'dir') { print(`cat: ${pathArg}: Is a directory`, 'error'); return; }
+
+        printBlank();
+        const lines = node.content.split('\n');
+        lines.forEach(line => print(line, line.startsWith('[') ? 'dim' : ''));
+        printBlank();
+      },
+
+      decode(args) {
+        const method = (args[0] || '').toLowerCase();
+        const data = args.slice(1).join(' ');
+
+        if (!method || !data) {
+          print('Usage: decode <method> <data>', 'warn');
+          print('       Methods: rot13', 'dim');
+          return;
+        }
+
+        if (method === 'rot13') {
+          const result = rotN(data, 13);
+          printBlank();
+          print('DECODING: ROT-13', 'info');
+          print('Input  : ' + data, 'dim');
+          print('Output : ' + result, 'bright');
+          printBlank();
+          if (result.includes('SH3LL') || result.includes('MASTER')) {
+            print('>>> PAYLOAD SUCCESSFULLY DECRYPTED <<<', 'bright');
+            print('    Submit the output as your flag.', 'dim');
+            printBlank();
+          }
+        } else {
+          print(`decode: unknown method '${method}'. Try: rot13`, 'error');
+        }
+      },
+
+      clear() {
+        output.innerHTML = '';
+      }
+    };
+
+    // ── Command parser ─────────────────────────────────────
+    function runCommand(raw) {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+
+      // Echo command to output
+      print(ps1El.textContent + trimmed, 'prompt');
+
+      const parts = trimmed.split(/\s+/);
+      const cmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      if (COMMANDS[cmd]) {
+        COMMANDS[cmd](args);
+      } else {
+        print(`${cmd}: command not found — type 'help' for available commands`, 'error');
+      }
+    }
+
+    // ── Input handling ─────────────────────────────────────
+    cmdInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const val = cmdInput.value;
+        if (val.trim()) {
+          history.unshift(val);
+          histIdx = -1;
+        }
+        runCommand(val);
+        cmdInput.value = '';
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (histIdx < history.length - 1) {
+          histIdx++;
+          cmdInput.value = history[histIdx];
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (histIdx > 0) {
+          histIdx--;
+          cmdInput.value = history[histIdx];
+        } else {
+          histIdx = -1;
+          cmdInput.value = '';
+        }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        // Basic tab completion for current dir
+        const partial = cmdInput.value.split(/\s+/).pop();
+        const dir = getCurrentDir();
+        const children = dir.children || dir;
+        const matches = Object.keys(children).filter(n => n.startsWith(partial) && !children[n].hidden);
+        if (matches.length === 1) {
+          const rest = cmdInput.value.split(/\s+/);
+          rest[rest.length - 1] = matches[0] + (children[matches[0]].type === 'dir' ? '/' : '');
+          cmdInput.value = rest.join(' ');
+        }
+      }
+    });
+
+    // Always keep focus on input
+    document.addEventListener('click', () => cmdInput.focus());
+
+    // ── Boot sequence ──────────────────────────────────────
+    const BOOT_LINES = [
+      { text: '', delay: 0 },
+      { text: '╔══════════════════════════════════════════════════╗', delay: 100, cls: 'dim' },
+      { text: '║        SPECTER SECURITY SYSTEM v7.3.1           ║', delay: 180, cls: 'dim' },
+      { text: '║           GHOST SHELL — STAGE 15                ║', delay: 260, cls: 'dim' },
+      { text: '╚══════════════════════════════════════════════════╝', delay: 340, cls: 'dim' },
+      { text: '', delay: 420 },
+      { text: 'Initializing kernel modules...', delay: 500, cls: 'dim' },
+      { text: '[  OK  ] Cipher engine loaded.', delay: 700, cls: 'dim' },
+      { text: '[  OK  ] Virtual filesystem mounted.', delay: 900, cls: 'dim' },
+      { text: '[  OK  ] Decode utilities ready.', delay: 1100, cls: 'dim' },
+      { text: '', delay: 1300 },
+      { text: 'IDENTITY VERIFIED — WELCOME, GHOST AGENT.', delay: 1500, cls: 'bright' },
+      { text: '', delay: 1600 },
+      { text: 'A Specter payload is concealed on this system.', delay: 1800 },
+      { text: 'Find it. Decode it. Submit it.', delay: 2100 },
+      { text: '', delay: 2300 },
+      { text: "Type 'help' for available commands.", delay: 2500, cls: 'dim' },
+      { text: '', delay: 2700 },
+    ];
+
+    function runBoot() {
+      let i = 0;
+      function next() {
+        if (i >= BOOT_LINES.length) {
+          cmdInput.focus();
+          return;
+        }
+        const l = BOOT_LINES[i++];
+        setTimeout(() => {
+          print(l.text, l.cls || '');
+          next();
+        }, l.delay - (BOOT_LINES[i - 2]?.delay || 0) + (i === 1 ? 0 : 0));
+      }
+      // Schedule all at absolute times
+      BOOT_LINES.forEach(l => {
+        setTimeout(() => print(l.text, l.cls || ''), l.delay);
+      });
+      setTimeout(() => cmdInput.focus(), BOOT_LINES[BOOT_LINES.length - 1].delay + 200);
+    }
+
+    runBoot();
+  </script>
+</body>
+
+</html>

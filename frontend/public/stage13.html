@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INTEL TRACKER - Phase 13</title>
+  <style>
+    :root {
+      --bg: #050510;
+      --surface: #101525;
+      --border: #304060;
+      --cyan: #00d2ff;
+      --green: #00ff9d;
+      --purple: #9d50bb;
+      --text: #e0e6ed;
+      --muted: #8892b0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .background-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      background: rgba(0, 210, 255, 0.1);
+      color: var(--cyan);
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--cyan);
+      font-weight: bold;
+    }
+
+    .profile-banner {
+      background: linear-gradient(135deg, #1a1f35 0%, #0a0e1a 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      background: var(--surface);
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+    }
+
+    .profile-info h2 {
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .profile-info p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 25px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 15px;
+      text-align: left;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .nav-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 210, 255, 0.05);
+      box-shadow: inset 4px 0 0 var(--cyan);
+    }
+
+    .main-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      min-height: 400px;
+    }
+
+    .platform-view {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .platform-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .platform-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .platform-icon {
+      font-size: 1.2rem;
+    }
+
+    .platform-name {
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+    }
+
+    /* GitLab styles */
+    .bio-box {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 15px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border-left: 3px solid #fc6d26;
+    }
+
+    /* Twitter styles */
+    .tweet {
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .tweet-user {
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+      color: var(--cyan);
+    }
+
+    .tweet-content {
+      font-size: 0.9rem;
+    }
+
+    /* LinkedIn styles */
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill-tag {
+      background: rgba(0, 210, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .skill-tag.selected {
+      background: var(--cyan);
+      color: #000;
+      border-color: var(--cyan);
+    }
+
+    /* Blog styles */
+    .blog-post {
+      margin-bottom: 25px;
+    }
+
+    .blog-date {
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-bottom: 5px;
+    }
+
+    .blog-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .blog-content {
+      font-size: 0.9rem;
+      color: #b0b0b0;
+    }
+
+    .hidden-reveal {
+      margin-top: 30px;
+      padding: 20px;
+      background: #000;
+      border: 1px dashed var(--cyan);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .hidden-reveal.show {
+      display: block;
+    }
+
+    #verify-box {
+      margin-top: 40px;
+      background: #0a0e1a;
+      border: 2px solid var(--border);
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    #verify-box h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      color: var(--muted);
+    }
+
+    .input-field {
+      background: #1a1f35;
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: var(--text);
+      font-family: monospace;
+      font-size: 1.1rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
+    }
+
+    .submit-btn {
+      background: var(--cyan);
+      color: #000;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: transform 0.1s;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+    }
+
+    #result-msg {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .success {
+      color: var(--green);
+    }
+
+    .error {
+      color: #ff5050;
+    }
+
+    .acrostic-hint {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="background-grid"></div>
+  <div class="container">
+    <div class="header">
+      <h1>Intel Tracker <span style="font-weight: 300;">v4.2</span></h1>
+      <span class="status-badge">TARGET: GH0ST_ADMIN</span>
+    </div>
+
+    <div class="profile-banner">
+      <div class="avatar">👤</div>
+      <div class="profile-info">
+        <h2>Administrator</h2>
+        <p>Security Identity Profile #88219-GA</p>
+        <p style="font-size: 0.75rem; color: var(--cyan); margin-top: 5px;">THREAT LEVEL: CRITICAL</p>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="sidebar">
+        <button class="nav-btn active" onclick="showPlatform('gitlab')">GitLab Instance</button>
+        <button class="nav-btn" onclick="showPlatform('twitter')">Social Intercept</button>
+        <button class="nav-btn" onclick="showPlatform('linkedin')">Professional Matrix</button>
+        <button class="nav-btn" onclick="showPlatform('blog')">Personal Blog</button>
+      </div>
+
+      <div class="main-content">
+        <!-- GITLAB -->
+        <div id="gitlab" class="platform-view active">
+          <div class="platform-header">
+            <span class="platform-icon">🦊</span>
+            <span class="platform-name">GitLab</span>
+          </div>
+          <p style="margin-bottom: 15px; font-size: 0.9rem;">Target profile bio extracted from internal instance:</p>
+          <div class="bio-box">
+            System status: nominal.<br>
+            Current task: Rotating master encryption keys.<br>
+            Recovery identifier: <span style="color: var(--cyan);">R0hPU1Q=</span><br><br>
+            [COMMIT_LOG: LAST_PUSH 2026-03-05]
+          </div>
+          <p class="acrostic-hint">Note: Biometric ID fragment detected in bio string.</p>
+        </div>
+
+        <!-- TWITTER -->
+        <div id="twitter" class="platform-view">
+          <div class="platform-header">
+            <span class="platform-icon">🐦</span>
+            <span class="platform-name">X / Social Intercept</span>
+          </div>
+          <div class="tweet">
+            <div class="tweet-user">@gh0st_admin</div>
+            <div class="tweet-content">Readiness is the first step of survival in this digital war.</div>
+          </div>
+          <div class="tweet">
+            <div class="tweet-user">@gh0st_admin</div>
+            <div class="tweet-content">Everything is connected, even when it feels like it's falling apart.</div>
+          </div>
+          <div class="tweet">
+            <div class="tweet-user">@gh0st_admin</div>
+            <div class="tweet-content">Complexity is the shield of the wise, simplicity the weapon of the brave.</div>
+          </div>
+          <div class="tweet">
+            <div class="tweet-user">@gh0st_admin</div>
+            <div class="tweet-content">Ongoing system updates are critical to maintaining perimeter defense.</div>
+          </div>
+          <div class="tweet">
+            <div class="tweet-user">@gh0st_admin</div>
+            <div class="tweet-content">Never trust a single point of failure in your security stack.</div>
+          </div>
+          <p class="acrostic-hint">System message: Look for a vertical sequence in the feed.</p>
+        </div>
+
+        <!-- LINKEDIN -->
+        <div id="linkedin" class="platform-view">
+          <div class="platform-header">
+            <span class="platform-icon">💼</span>
+            <span class="platform-name">LinkedIn / Matrix</span>
+          </div>
+          <p style="margin-bottom: 20px; font-size: 0.9rem;">Endorsed Skills & Endorsements:</p>
+          <div class="skill-list">
+            <div class="skill-tag" onclick="toggleSkill(this, 'OP')">Distributed Systems</div>
+            <div class="skill-tag" onclick="toggleSkill(this, 'X')">Kernel Development</div>
+            <div class="skill-tag" onclick="toggleSkill(this, 'SEC')">Security Protocols</div>
+            <div class="skill-tag" onclick="toggleSkill(this, 'Y')">Network Analysis</div>
+          </div>
+          <div id="skill-reveal" class="hidden-reveal">
+            <p style="font-size: 0.8rem; color: var(--muted);">REVEALED FRAGMENT:</p>
+            <p id="skill-fragment" style="font-weight: bold; color: var(--cyan); letter-spacing: 2px;"></p>
+          </div>
+          <p class="acrostic-hint">Intercept: "The target values the intersection of practice and theory."</p>
+        </div>
+
+        <!-- BLOG -->
+        <div id="blog" class="platform-view">
+          <div class="platform-header">
+            <span class="platform-icon">📝</span>
+            <span class="platform-name">The Obsidian Blog</span>
+          </div>
+          <div class="blog-post">
+            <div class="blog-date">March 07, 2026</div>
+            <div class="blog-title">The Silence of the Grid</div>
+            <div class="blog-content">
+              People think the internet is loud, but the real power moves in the spaces between the bits.
+              When everyone is shouting, visibility is for the weak. I prefer the shadows.
+            </div>
+          </div>
+          <div class="blog-post">
+            <div class="blog-date">February 28, 2026</div>
+            <div class="blog-title">The Final Failure</div>
+            <div class="blog-content">
+              Even the best systems have a breaking point. It's not if, but when.
+              If you can't find the artifact, you're not looking deep enough into the source.
+            </div>
+          </div>
+          <!-- FRAGMENT_WORD_HINT: Look for HEX_ARTIFACT in comments -->
+          <!-- HEX_ARTIFACT: 47424A4D (Requires ROT-1 shift) -->
+          <p class="acrostic-hint">Security Trace: "Truth is buried in the metadata of the archive."</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="verify-box">
+      <h3>RECONSTRUCTED PASSPHRASE</h3>
+      <input type="text" id="passphrase" class="input-field" placeholder="WORD1_WORD2_WORD3_WORD4" autocomplete="off">
+      <div>
+        <button class="submit-btn" onclick="verify()">DECRYPT NETWORK</button>
+      </div>
+      <div id="result-msg"></div>
+    </div>
+  </div>
+
+  <script>
+    function showPlatform(id) {
+      document.querySelectorAll('.platform-view').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    let selectedSkills = { OP: false, SEC: false };
+    function toggleSkill(el, type) {
+      if (type !== 'OP' && type !== 'SEC') return;
+
+      selectedSkills[type] = !selectedSkills[type];
+      el.classList.toggle('selected');
+
+      const reveal = document.getElementById('skill-reveal');
+      const fragment = document.getElementById('skill-fragment');
+
+      if (selectedSkills.OP && selectedSkills.SEC) {
+        reveal.classList.add('show');
+        fragment.textContent = "OPSEC";
+      } else {
+        reveal.classList.remove('show');
+      }
+    }
+
+    function verify() {
+      const val = document.getElementById('passphrase').value.trim().toUpperCase();
+      const msg = document.getElementById('result-msg');
+
+      if (val === 'GHOST_RECON_OPSEC_FAIL') {
+        msg.className = 'success';
+        msg.textContent = '✓ ACCESS GRANTED. FLAG: GHOST_RECON_OPSEC_FAIL';
+        setTimeout(() => {
+          alert("Congratulations! Submit GHOST_RECON_OPSEC_FAIL to complete the stage.");
+        }, 500);
+      } else {
+        msg.className = 'error';
+        msg.textContent = '✗ INVALID PASSPHRASE. FRAGMENTS MISALIGNED.';
+      }
+    }
+  </script>
+</body>
+
+</html>

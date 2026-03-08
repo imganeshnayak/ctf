@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Stage 4 — Secure Drop</title>
+  <style>
+    body { font-family: 'Courier New', monospace; background:#081024; color:#dfefff; padding:40px; }
+    .panel { max-width:900px; margin:auto; background:rgba(255,255,255,0.03); border:1px solid #114422; padding:28px; border-radius:8px; }
+    h1 { color:#00ff88; text-align:center; }
+    .note { color:#aab8c8; margin:16px 0; }
+    .secret { background:#0b0b0b; color:#ffd700; padding:12px; border-radius:6px; margin:12px 0; }
+    .decoy { color:#ff6b6b; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>🔐 Secure Drop</h1>
+    <p class="note">Agents: This page contains two candidate flags. One is a decoy; one is authentic. Use judgment.</p>
+
+    <!-- SOURCE -->
+
+    <section>
+      <h2>Transmission Log</h2>
+      <p class="note">Intercepted payloads sometimes include obvious encodings. Treat them with suspicion.</p>
+      <div class="secret" aria-hidden="true">
+        <!-- Decoy container: intentionally obvious decoy -->
+        <span class="decoy">RkFLRV9GTEFHX0ZBS0U=</span>
+        <p class="note">(This is a decoy. The real fragments are on the fragment pages.)</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Field Reports</h2>
+      <p class="note">Teams report flags hidden in comments across different files. Some are subtle.</p>
+
+      <!-- REVEALS -->
+
+      <p>Keep a level head. The flashy encodings are often decoys; read surrounding context.</p>
+    </section>
+
+    <footer style="margin-top:24px;">
+      <!-- TRUTH -->
+      <p class="note">Submit only the authentic flag to avoid the lockout.</p>
+    </footer>
+  </div>
+
+  <script>
+    console.log('Stage 4 Secure Drop — good luck.');
+  </script>
+</body>
+</html>

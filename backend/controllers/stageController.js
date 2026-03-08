@@ -46,6 +46,9 @@ export const getAllStages = async (req, res) => {
                 challengeContent = generateDynamicStage7(userId);
             }
 
+            // Check if hint is unlocked for this stage
+            const hintUnlocked = user.hintUsedStages.includes(stage.stageNumber);
+
             // All stages are unlocked
             return {
                 _id: stage._id,
@@ -57,7 +60,8 @@ export const getAllStages = async (req, res) => {
                 hints: stage.hints,
                 points: stage.points,
                 locked: false,  // All stages are unlocked
-                completed: isCompleted
+                completed: isCompleted,
+                hintUnlocked: hintUnlocked
             };
         });
 
@@ -95,15 +99,21 @@ export const validateKey = async (req, res) => {
         if (isCorrect) {
             // Check if already completed
             if (!user.completedStages.includes(stage.stageNumber)) {
+                // Check for hint deduction (25%)
+                let pointsToAward = stage.points;
+                if (user.hintUsedStages.includes(stage.stageNumber)) {
+                    pointsToAward = Math.floor(stage.points * 0.75);
+                }
+
                 user.completedStages.push(stage.stageNumber);
-                user.totalScore += stage.points;
+                user.totalScore += pointsToAward;
 
                 // Record submission with timestamp for leaderboard
                 user.submissions.push({
                     stageId: stage._id,
                     stageNumber: stage.stageNumber,
                     completedAt: new Date(),
-                    points: stage.points
+                    points: pointsToAward
                 });
 
                 // Move to next stage if this was the current stage
@@ -124,11 +134,56 @@ export const validateKey = async (req, res) => {
                 }
             });
         } else {
+            // Stage 16 special hint: if user submits the known mangled variant
+            let incorrectMsg = 'Incorrect key. Try again!';
+            if (stage.stageNumber === 16) {
+                const normalized = submittedKey.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+                const knownWrong = ['mastrfallstag3s', 'mastrofallstages', 'mast#r_()f_all_stag3s'.replace(/[^a-z0-9_]/g, '')];
+                if (knownWrong.some(w => normalized.includes(w.replace(/[^a-z0-9]/g, '')) || w.includes(normalized))) {
+                    incorrectMsg = '🔤 Almost — but check your spelling carefully before re-submitting!';
+                }
+            }
             return res.status(400).json({
                 success: false,
-                message: 'Incorrect key. Try again!'
+                message: incorrectMsg
             });
         }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+// Unlock hint for a stage
+export const unlockHint = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const stageId = req.params.id;
+
+        const stage = await Stage.findById(stageId);
+        const user = await User.findById(userId);
+
+        if (!stage || !user) {
+            return res.status(404).json({
+                success: false,
+                message: 'Stage or user not found'
+            });
+        }
+
+        // Add to hintUsedStages if not already there
+        if (!user.hintUsedStages.includes(stage.stageNumber)) {
+            user.hintUsedStages.push(stage.stageNumber);
+            await user.save();
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Hint unlocked!',
+            data: {
+                hintUsedStages: user.hintUsedStages
+            }
+        });
     } catch (error) {
         res.status(500).json({
             success: false,

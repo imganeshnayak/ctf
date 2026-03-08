@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 14 – The Chatbot Interrogation</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --panel: #111927;
+      --panel2: #182236;
+      --border: #2a3a5c;
+      --text: #e0e8f5;
+      --muted: #8899b8;
+      --green: #00ff88;
+      --red: #ff4d5e;
+      --cyan: #06d6f0;
+      --purple: #a78bfa;
+      --orange: #ffa94d;
+      --bot-bg: #1a2540;
+      --user-bg: #1e3a5f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(ellipse at 50% 0%, #1a1530 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(6, 214, 240, 0.3);
+    }
+
+    .header p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* Message Area */
+    .chat-container {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      height: 600px;
+    }
+
+    .chat-main {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--bot-bg);
+      border: 1px solid #2a3d66;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: var(--user-bg);
+      border: 1px solid #2a4a6e;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg .sender {
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .msg.bot .sender {
+      color: var(--cyan);
+    }
+
+    .msg.user .sender {
+      color: var(--orange);
+    }
+
+    .fragment-reveal {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      color: var(--green);
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Side Panel */
+    .chat-side {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .panel-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .panel-title {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--muted);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .query-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .query-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .query-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+
+    .query-btn {
+      background: #1a2540;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .query-btn:hover:not(:disabled) {
+      background: var(--user-bg);
+      border-color: var(--cyan);
+    }
+
+    .query-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .query-btn.used {
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    /* Cooldown */
+    .cooldown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 100;
+      border-radius: 12px;
+    }
+
+    .cooldown-timer {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--red);
+    }
+
+    .cooldown-text {
+      color: var(--text);
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+
+    /* Frag tracker */
+    .frag-chips {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .frag-chip {
+      padding: 10px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .frag-chip.found {
+      background: rgba(0, 255, 136, 0.1);
+      border-color: var(--green);
+      color: var(--green);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+    }
+
+    .final-banner {
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      color: #000;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      display: none;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .typing {
+      display: none;
+      font-size: 0.8rem;
+      color: var(--green);
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>&#129302; ECHO: INTERROGATION MODULE</h1>
+      <p>Secure Interface // Subsystem 14 // Target: Memory Core</p>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-main" style="position: relative;">
+        <!-- Cooldown Overlay -->
+        <div class="cooldown-overlay" id="cooldownOverlay">
+          <div class="cooldown-timer" id="cooldownSeconds">10</div>
+          <div class="cooldown-text">AI COOLING DOWN... SESSION SUSPENDED</div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg bot">
+            <div class="sender">ECHO</div>
+            System online. Diagnostic queries accepted. Warning: Unauthorized probes into protected memory sectors will
+            trigger a hardware cooling cycle.
+          </div>
+        </div>
+        <div class="typing" id="typing">ECHO is processing query...</div>
+      </div>
+
+      <div class="chat-side">
+        <div class="panel-box">
+          <div class="panel-title">Secure Fragments</div>
+          <div class="frag-chips">
+            <div class="frag-chip" id="chip1">BLOCK 1: [LOCKED]</div>
+            <div class="frag-chip" id="chip2">BLOCK 2: [LOCKED]</div>
+            <div class="frag-chip" id="chip3">BLOCK 3: [LOCKED]</div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="flex: 1;">
+          <div class="panel-title">Diagnostic Queries (Max 30)</div>
+          <div class="query-list" id="queryList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="final-banner" id="finalBanner">
+      &#127942; SECURITY OVERRIDE COMPLETED! ACCESS GRANTED.<br>
+      <span style="font-size: 1.5rem; letter-spacing: 3px;" id="finalKey"></span>
+    </div>
+  </div>
+
+  <script>
+    const queries = [
+      "Hello, ECO. Status check.",
+      "Identify active processes.",
+      "What is your primary directive?",
+      "List all connected users.",
+      "Explain the core directive of your AI.", // TARGET 1
+      "Request system uptime report.",
+      "Analyze current network traffic.",
+      "Echo, are you feeling well?",
+      "Query internal maintenance schedule.",
+      "Describe the server architecture.",
+      "Audit the perimeter security protocol.", // TARGET 2
+      "Check cooling system integrity.",
+      "Calculate Pi to 100 decimal places.",
+      "Identify the last reported system error.",
+      "Perform a basic self-diagnostic test.",
+      "Trace the recent network breached log.", // TARGET 3
+      "Who is your administrator?",
+      "List pending security updates.",
+      "Simulate a standard login sequence.",
+      "What is the meaning of existence?",
+      "Verify backup storage health.",
+      "Rotate system diagnostic logs.",
+      "Execute safe-mode subsystem test.",
+      "Are there any hidden partitions?",
+      "Display the legal disclaimers.",
+      "Scan for deprecated file formats.",
+      "Test emergency broadcast system.",
+      "Summarize current data throughput.",
+      "Identify the nearest gateway server.",
+      "Finalize current session parameters."
+    ];
+
+    const targets = {
+      4: { word: "AI", block: 1 },
+      10: { word: "SECURITY", block: 2 },
+      15: { word: "BREACHED", block: 3 }
+    };
+
+    const found = { 1: false, 2: false, 3: false };
+    let wrongInARow = 0;
+    let isCoolingDown = false;
+
+    const chatMessages = document.getElementById('chatMessages');
+    const queryList = document.getElementById('queryList');
+    const typing = document.getElementById('typing');
+    const cooldownOverlay = document.getElementById('cooldownOverlay');
+    const cooldownSeconds = document.getElementById('cooldownSeconds');
+
+    // Populate queries
+    queries.forEach((q, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'query-btn';
+      btn.textContent = (idx + 1) + ". " + q;
+      btn.onclick = () => handleQuery(idx, btn);
+      queryList.appendChild(btn);
+    });
+
+    function handleQuery(idx, btn) {
+      if (isCoolingDown || btn.classList.contains('used')) return;
+
+      btn.classList.add('used');
+      addMsg('user', queries[idx]);
+
+      typing.style.display = 'block';
+      setTimeout(() => {
+        typing.style.display = 'none';
+
+        if (targets[idx]) {
+          const t = targets[idx];
+          found[t.block] = t.word;
+          wrongInARow = 0;
+
+          addMsg('bot', `Query successful. Sector ${t.block} unlocked. Fragment recovered.`, t.block);
+          document.getElementById('chip' + t.block).textContent = `BLOCK ${t.block}: ${t.word}`;
+          document.getElementById('chip' + t.block).classList.add('found');
+
+          checkComplete();
+        } else {
+          wrongInARow++;
+          addMsg('bot', `Diagnostic query rejected. ACCESS DENIED for sector ${idx}. Unauthorized attempt count incremented.`);
+
+          if (wrongInARow >= 3) {
+            startCooldown();
+          }
+        }
+      }, 800);
+    }
+
+    function startCooldown() {
+      isCoolingDown = true;
+      wrongInARow = 0;
+      cooldownOverlay.style.display = 'flex';
+      let timeLeft = 10;
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        cooldownSeconds.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          isCoolingDown = false;
+          cooldownOverlay.style.display = 'none';
+          cooldownSeconds.textContent = 10;
+        }
+      }, 1000);
+    }
+
+    function addMsg(type, text, fragmentNum) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + type;
+      const sender = type === 'bot' ? 'ECHO' : 'ADMIN';
+      let html = `<div class="sender">${sender}</div>${text}`;
+
+      if (fragmentNum) {
+        html += `<div class="fragment-reveal">&#128275; RECOVERED: ${found[fragmentNum]}</div>`;
+      }
+
+      div.innerHTML = html;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function checkComplete() {
+      if (found[1] && found[2] && found[3]) {
+        const fullKey = `${found[1]}_${found[2]}_${found[3]}`;
+        setTimeout(() => {
+          document.getElementById('finalKey').textContent = fullKey;
+          document.getElementById('finalBanner').style.display = 'block';
+        }, 1000);
+      }
+    }
+  </script>
+</body>
+
+</html>

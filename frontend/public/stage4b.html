@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fragment Beta — Curator's Archive</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: #0f0a00;
+      color: #d8c89a;
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      padding: 40px 20px
+    }
+
+    .terminal {
+      max-width: 860px;
+      margin: auto;
+      border: 1px solid #4a3500;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(180, 120, 0, 0.12)
+    }
+
+    .titlebar {
+      background: #1a1100;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #4a3500
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%
+    }
+
+    .dot-r {
+      background: #e74c3c
+    }
+
+    .dot-y {
+      background: #f39c12
+    }
+
+    .dot-g {
+      background: #27ae60
+    }
+
+    .titlebar-label {
+      flex: 1;
+      text-align: center;
+      font-size: 0.78em;
+      color: #7a6000;
+      letter-spacing: 2px
+    }
+
+    .body {
+      padding: 32px
+    }
+
+    .stamp {
+      display: inline-block;
+      border: 2px solid #f39c12;
+      color: #f39c12;
+      padding: 4px 14px;
+      font-size: 0.7em;
+      letter-spacing: 4px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      transform: rotate(1.5deg)
+    }
+
+    .doc-meta {
+      font-size: 0.72em;
+      color: #7a6000;
+      line-height: 2;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #4a3500;
+      padding-bottom: 20px
+    }
+
+    .doc-meta span {
+      color: #c8a000
+    }
+
+    h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.6em;
+      color: #f0c040;
+      letter-spacing: 3px;
+      margin-bottom: 20px
+    }
+
+    .section {
+      margin: 24px 0;
+      padding: 18px;
+      background: #0a0800;
+      border-left: 3px solid #4a3500;
+      border-radius: 0 4px 4px 0
+    }
+
+    .section-label {
+      font-size: 0.68em;
+      color: #7a6000;
+      letter-spacing: 3px;
+      margin-bottom: 10px
+    }
+
+    p {
+      line-height: 1.8;
+      color: #a89870;
+      font-size: 0.88em;
+      margin-bottom: 12px
+    }
+
+    .redacted {
+      background: #a89870;
+      color: #a89870;
+      border-radius: 2px;
+      user-select: none
+    }
+
+    .warning {
+      color: #e74c3c;
+      font-size: 0.75em;
+      border: 1px solid #e74c3c30;
+      padding: 10px 14px;
+      border-radius: 3px;
+      margin-top: 20px
+    }
+
+    code {
+      color: #ffcc00;
+      font-size: 0.85em
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78em;
+      margin-top: 8px
+    }
+
+    td,
+    th {
+      padding: 6px 10px;
+      border: 1px solid #4a3500;
+      text-align: left
+    }
+
+    th {
+      background: #1a1100;
+      color: #7a6000;
+      letter-spacing: 1px
+    }
+
+    td {
+      color: #a89870
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 16px;
+      border-top: 1px solid #4a3500;
+      font-size: 0.7em;
+      color: #4a3500;
+      display: flex;
+      justify-content: space-between
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ARCHIVE_REF: DOC-4B-2024-002 -->
+  <!-- CLASSIFICATION: SECRET/REL TO FIVE EYES -->
+  <!-- PREV_DOC: /stage4a.html -->
+  <!-- STATUS: UNDER_REVIEW -->
+
+  <!-- AUDIT_HEADER: BEGIN -->
+  <!-- AUDIT_OP: READ -->
+  <!-- AUDIT_USER: vance_e -->
+  <!-- AUDIT_SESSION: 9c2e1f00 -->
+  <!-- AUDIT_HEADER: END -->
+
+  <div class="terminal">
+    <div class="titlebar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="titlebar-label">CURATOR'S ARCHIVE — FRAGMENT BETA — AUDIT MODE</div>
+    </div>
+    <div class="body">
+
+      <div class="stamp">UNDER REVIEW</div>
+
+      <div class="doc-meta">
+        <div>DOCUMENT ID: <span>DOC-4B-2024-7742</span></div>
+        <div>FRAGMENT: <span>Beta (2 of 3)</span></div>
+        <div>CLASSIFICATION: <span>SECRET / REL TO FIVE EYES</span></div>
+        <div>CUSTODIAN: <span>Archivist Unit 7 — Field Division</span></div>
+        <div>LAST MODIFIED: <span>2024-03-14T11:05:33Z</span></div>
+        <div>AUDIT STATUS: <span>ANOMALY FLAGGED</span></div>
+      </div>
+
+      <h1>Fragment Beta</h1>
+
+      <!-- NOTE: Audit logs appear empty on the surface. -->
+      <!-- DEEP_SCAN required to retrieve embedded entries. -->
+
+      <div class="section">
+        <div class="section-label">// FIELD REPORT — EXCERPT</div>
+        <p>
+          Fragment Beta was intercepted at relay node <code>NET-07</code> at 11:02 UTC.
+          The transmission header reported zero embedded data — the audit log appeared completely empty.
+        </p>
+        <p>
+          However, field unit 7 flagged a discrepancy: the payload size did not match the declared content length.
+          Three bytes were unaccounted for. No encoding. No cipher. The bytes were simply… present.
+        </p>
+        <p>
+          "The log said nothing," the archivist wrote. "But I trusted what the packet <em>contained</em>, not what it
+          <em>displayed</em>."
+        </p>
+      </div>
+
+      <!-- RELAY_NODE: NET-07 -->
+      <!-- PAYLOAD_DECLARED: 612 bytes -->
+      <!-- PAYLOAD_ACTUAL: 615 bytes -->
+      <!-- DELTA: 3 bytes — UNRESOLVED -->
+
+      <div class="section">
+        <div class="section-label">// EMBEDDED AUDIT LOG — RAW ENTRIES</div>
+        <table>
+          <tr>
+            <th>TIMESTAMP</th>
+            <th>ENTRY_TYPE</th>
+            <th>CONTENT</th>
+            <th>STATUS</th>
+          </tr>
+          <tr>
+            <td>2024-03-14 11:00</td>
+            <td>SYS</td>
+            <td>Session opened</td>
+            <td>OK</td>
+          </tr>
+          <tr>
+            <td>2024-03-14 11:01</td>
+            <td>SYS</td>
+            <td>Integrity check</td>
+            <td>PASS</td>
+          </tr>
+          <tr>
+            <td>2024-03-14 11:02</td>
+            <td>DATA</td>
+            <!-- FRAGMENT_WORD: MYST3RY -->
+            <td><span class="redacted">████ ████</span></td>
+            <td>HIDDEN</td>
+          </tr>
+          <tr>
+            <td>2024-03-14 11:04</td>
+            <td>SYS</td>
+            <td>Transmission end</td>
+            <td>OK</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- DECOY_ENTRY: "CRYPTS" — this is not the word -->
+      <!-- DECOY_ENTRY: "M1RROR" — red herring -->
+      <!-- DECOY_ENTRY: "ECH0ES" — not a fragment -->
+
+      <div class="section">
+        <div class="section-label">// ANALYST NOTE — VANCE</div>
+        <p>
+          The surface of this fragment is clean. If you're reading the rendered page alone, you will find nothing.
+          The data exists only in the structure — the framework that holds the content, not the content itself.
+        </p>
+        <p>
+          Recommended approach: view the source directly. Inspect what the browser received, not what it chose to show.
+        </p>
+      </div>
+
+      <!-- RAW_FLAG: not_stored_here -->
+      <!-- BUILD: 20240314.beta.1 -->
+
+      <div class="warning">
+        ⛔ Fragment Beta audit log flagged for manual review. Access restricted to authorized examiners only.
+        Unauthorized access will be logged.
+      </div>
+
+      <div class="footer">
+        <span>DPS — FRAGMENT BETA</span>
+        <span>PAGE 1 OF 1</span>
+        <span>AUDIT MODE</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- END OF DOCUMENT: DOC-4B-2024-7742 -->
+  <!-- NEXT_FRAGMENT: /stage4c.html -->
+</body>
+
+</html>

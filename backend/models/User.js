@@ -35,7 +35,10 @@ const userSchema = new mongoose.Schema({
     lastActivity: {
         type: Date,
         default: Date.now
-    }
+    },
+    hintUsedStages: [{
+        type: Number
+    }]
 }, {
     timestamps: true
 });

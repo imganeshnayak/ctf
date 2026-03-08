@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { getLeaderboard } from '../services/api';
-import { getTimer, startTimer, stopTimer } from '../services/api';
 import '../App.css';
 
 function Leaderboard({ currentUser }) {
     const [leaderboard, setLeaderboard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [timer, setTimer] = useState({ running: false, remaining: 90 * 60 });
-    const [timerLoading, setTimerLoading] = useState(false);
+
 
     useEffect(() => {
         loadLeaderboard();
-        fetchTimer();
-        const interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds
-        return () => clearInterval(interval);
     }, []);
 
     const loadLeaderboard = async () => {
@@ -33,38 +28,7 @@ function Leaderboard({ currentUser }) {
         }
     };
 
-    const fetchTimer = async () => {
-        try {
-            const data = await getTimer();
-            setTimer(data);
-        } catch (err) {
-            console.error('Error fetching timer:', err);
-        }
-    };
 
-    const handleStart = async () => {
-        setTimerLoading(true);
-        try {
-            await startTimer();
-            // Optionally, you can refetch the timer here if needed
-        } catch (err) {
-            console.error('Error starting timer:', err);
-        } finally {
-            setTimerLoading(false);
-        }
-    };
-
-    const handleStop = async () => {
-        setTimerLoading(true);
-        try {
-            await stopTimer();
-            // Optionally, you can refetch the timer here if needed
-        } catch (err) {
-            console.error('Error stopping timer:', err);
-        } finally {
-            setTimerLoading(false);
-        }
-    };
 
     const getMedalIcon = (rank) => {
         switch (rank) {
@@ -90,16 +54,12 @@ function Leaderboard({ currentUser }) {
         });
     };
 
-    const formatTimer = (seconds) => {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
-    };
+
 
     if (loading) {
         return (
-        
-                <div className="loading-spinner">Loading leaderboard...</div>
+
+            <div className="loading-spinner">Loading leaderboard...</div>
         );
     }
 
@@ -118,18 +78,6 @@ function Leaderboard({ currentUser }) {
                 <p className="leaderboard-subtitle">
                     Rankings based on completed stages and submission time
                 </p>
-            </div>
-
-            <div className="timer-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0' }}>
-                <div className="timer-display" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#0077ff', letterSpacing: '2px' }}>
-                    ⏰ {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
-                </div>
-                <button className="btn-primary" onClick={handleStart} disabled={timerLoading}>
-                    Start/Reset 90:00
-                </button>
-                <button className="btn-secondary" onClick={handleStop} disabled={timerLoading}>
-                    Stop
-                </button>
             </div>
 
             <div className="leaderboard-table-wrapper">

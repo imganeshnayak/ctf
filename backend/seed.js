@@ -3,215 +3,310 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import Stage from './models/Stage.js';
 
+
 dotenv.config();
 
 const stages = [
   {
     stageNumber: 1,
-    title: 'Binary Basics',
-    description: 'Convert decimal to binary - the foundation of computing!',
-    difficulty: 'Easy',
+    title: 'Binary Manipulation Protocol',
+    description: 'Decode the visual pattern, apply transformations, then compute the final value.',
+    difficulty: 'Medium',
     challengeContent: `
-      <div class="challenge-box">
-        <h3>🔢 Stage 1: Number to Binary Conversion</h3>
-        
-        <div class="cipher-box">
-          <p><strong>Your Challenge:</strong></p>
-          <p>Convert the decimal number <code style="font-size: 1.5em; color: #00ff88;">42</code> to binary.</p>
+    <div class="challenge-box">
+      <h3>🔐 Stage 1: Signal Reconstruction</h3>
+      
+      <div class="cipher-box" style="text-align: center; padding: 20px;">
+        <p><strong>Your Challenge:</strong></p>
+        <p>These light bulbs represent a binary signal (ON=1, OFF=0):</p>
+        <div style="font-size: 3em; letter-spacing: 0.3em; margin: 20px 0; user-select: none; pointer-events: none;">
+          ⚫💡💡⚫💡⚫💡💡
         </div>
-        
-        <div class="cipher-box">
-          <p><strong>Submit your answer:</strong></p>
-          <p>Enter the binary representation of 42 (without spaces or prefixes like "0b")</p>
-          <p><em>Example format: If the answer was 13, you'd enter: 1101</em></p>
-        </div>
+        <p style="font-size: 0.9em; color: #888;">
+          Step 1: Read left to right.<br>
+          Step 2: Reverse the entire binary string.<br>
+          Step 3: Flip every bit (1→0, 0→1).<br>
+          Step 4: Convert the final result to decimal.
+        </p>
       </div>
-    `,
-    correctKey: '101010',
+      
+      <div class="cipher-box">
+        <p><strong>Submit your answer:</strong></p>
+        <p>What decimal number results after ALL transformations?</p>
+        <p><em>Enter just the number</em></p>
+      </div>
+    </div>
+  `,
+    correctKey: '105',
     hints: [
-      'Powers of 2: 32, 16, 8, 4, 2, 1. Which ones add up to 42?',
-      '42 = 32 + 8 + 2. Mark those positions as 1!',
-      'The answer is 6 digits long and starts with 1'
+      'Original binary is 01101011',
+      'Reversed becomes 11010110',
+      'flip the bits  ',
+      'Convert it to decimal'
     ],
-    points: 100
+    points: 200
   },
   {
     stageNumber: 2,
     title: 'Caesar\'s Secret',
-    description: 'Decode the ancient cipher',
+    description: 'Align the wheels to reveal the truth',
     difficulty: 'Easy',
     challengeContent: `
-      <div class="challenge-box">
-        <h3>🔐 Stage 2: Caesar Cipher</h3>
-        <p>Julius Caesar used a simple cipher to protect his messages. Can you crack it?</p>
-        
-        <div class="cipher-box">
-          <p><strong>Encrypted Message:</strong></p>
-          <code>FDHVDU FLSKHU</code>
+    <div class="challenge-box">
+      <h3>🔐 Stage 2: Wheel Alignment Cipher</h3>
+      <p>There are two alphabet rings. The bottom one is shifted.</p>
+      
+      <div class="cipher-box" style="text-align: center; font-family: monospace; line-height: 1.8;">
+        <p style="user-select: none;"><strong>Outer Ring (Normal Alphabet):</strong></p>
+        <div style="font-size: 1.2em; letter-spacing: 0.3em; color: #666; margin-bottom: 10px; white-space: nowrap; user-select: none;">
+          A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
         </div>
         
-        <div class="info-box">
-          <p>💡 <strong>About Caesar Cipher:</strong> Each letter is shifted by a fixed number of positions in the alphabet.</p>
-          <p>For example, with a shift of 1: A becomes B, B becomes C, and so on.</p>
-          <p><strong>Hint:</strong> Try different shift values from 1 to 25. The most common shift is 3!</p>
+        <p style="margin-top: 20px; user-select: none;"><strong>Inner Ring (Shifted Alphabet):</strong></p>
+        <div style="font-size: 1.2em; letter-spacing: 0.3em; color: #00ff88; font-weight: bold; white-space: nowrap; user-select: none;">
+          X Y Z A B C D E F G H I J K L M N O P Q R S T U V W
         </div>
         
-        <p><strong>Your task:</strong> Decode the message and submit it as the flag (use underscores instead of spaces).</p>
+        <p style="margin-top: 20px; color: #ff6b6b; font-size: 1.1em; user-select: none;">
+          <strong>Encrypted Word:</strong> CAESAR WHEEL
+        </p>
       </div>
-    `,
-    correctKey: 'CAESAR_CIPHER',
+      
+      <div class="info-box">
+        <p><strong>How to Decode:</strong></p>
+        <ol style="text-align:left; max-width:500px; margin:auto;">
+          <li>Find the encrypted letter in the <strong>inner ring</strong> row.</li>
+          <li>Look directly above it in the <strong>outer ring</strong> row.</li>
+          <li>Write down that outer letter.</li>
+          <li>Repeat for every letter.</li>
+        </ol>
+
+      </div>
+      
+      <p><strong>Your task:</strong> Decode the message and submit it in ALL CAPS with an underscore instead of a space.</p>
+    </div>
+  `,
+    correctKey: 'FDHVDU_ZKHHO',
     hints: [
-      'The shift value is 3 positions',
-      'F shifted back by 3 becomes C',
-      'Replace spaces with underscores in your answer'
+      '<span style="user-select: none;">Each letter shifts forward by 3.</span>',
+      '<span style="user-select: none;">Example: Inner C → Above it is F</span>',
+      '<span style="user-select: none;">C becomes F.</span>',
+      '<span style="user-select: none;">W becomes Z.</span>'
     ],
     points: 150
   },
   {
     stageNumber: 3,
-    title: 'Base64 Mystery',
-    description: 'Decode the encoded message',
-    difficulty: 'Easy',
-    challengeContent: `
-      <div class="challenge-box">
-        <h3>🔤 Stage 3: Base64 Encoding</h3>
-        <p>Base64 is a common encoding scheme used to represent binary data in ASCII format.</p>
-        
-        <div class="cipher-box">
-          <p><strong>Encoded String:</strong></p>
-          <code>REVDT0RFX01BU1RFUg==</code>
-        </div>
-        
-        <div class="info-box">
-          <p>💡 <strong>What is Base64?</strong> It's not encryption, just encoding! Anyone can decode it.</p>
-          <p><strong>How to decode:</strong></p>
-          <ul>
-            <li>Use online tools: Search for "base64 decode" in your browser</li>
-            <li>Use browser console: <code>atob("your_string_here")</code></li>
-            <li>Use command line: <code>echo "string" | base64 -d</code></li>
-          </ul>
-          <p><strong>Tip:</strong> The "==" at the end is padding - it's a telltale sign of Base64!</p>
-        </div>
-        
-        <p><strong>Your task:</strong> Decode the string and submit the result as your flag.</p>
-      </div>
-    `,
-    correctKey: 'DECODE_MASTER',
-    hints: [
-      'Use an online Base64 decoder',
-      'Or try atob() in your browser console',
-      'The decoded text is your flag'
-    ],
-    points: 150
-  },
-  {
-    stageNumber: 4,
-    title: 'HTML Detective',
-    description: 'Find the hidden flag in the HTML page',
+    title: 'The Time-Locked Vault',
+    description: 'Decode the rotating cipher sequence',
     difficulty: 'Medium',
     challengeContent: `
-      <div class="challenge-box">
-        <h3>🔍 Stage 4: HTML Detective</h3>
-        
-        <div class="cipher-box">
-          <p><strong>Your Mission:</strong></p>
-          <p>A special HTML page has been created for this challenge. Visit it and find the hidden flag!</p>
-          <p><a href="/stage4.html" target="_blank" style="color: #00ff88; font-size: 1.2em; text-decoration: underline;">🔗 Click here to open Stage 4 HTML page</a></p>
-        </div>
-        
-        <div class="info-box">
-          <p>💡 <strong>Tips:</strong></p>
-          <ul>
-            <li>The flag is hidden somewhere in the HTML source code</li>
-            <li>Try inspecting the page elements</li>
-            <li>Look for hidden attributes or encoded data</li>
-            <li>You might need to decode something...</li>
-          </ul>
-        </div>
-        
-        <div class="cipher-box">
-          <p><strong>Submit your answer:</strong></p>
-          <p>Once you find and decode the flag, enter it below.</p>
-        </div>
+    <div class="challenge-box">
+      <h3>🔤 Stage 3: Temporal Drift Protocol</h3>
+      
+      <div class="cipher-box" style="background: linear-gradient(135deg, #141e30 0%, #243b55 100%);">
+        <p><strong>⏰ Security Log:</strong></p>
+        <p style="font-family: monospace; font-size: 0.9em; color: #a8d8ea;">
+          [TIMESTAMP: 2024-01-01T00:00:00Z]<br>
+          [SYSTEM]: Vault synchronization required.<br>
+          [SYSTEM]: Current rotation: 180°<br>
+          [WARNING]: Raw decoding may produce invalid key.
+        </p>
       </div>
-    `,
-    correctKey: 'HTML_MASTER',
-    hints: [
-      'Inspect elements with class "secret-data"',
-      'Look for data attributes (data-flag)',
-      'The flag is encoded in Base64 - decode it!'
-    ],
-    points: 200
-  },
-  {
-    stageNumber: 5,
-    title: 'Python Debugger',
-    description: 'Find the hidden key and run the Python script',
-    difficulty: 'Hard',
-    challengeContent: `
-      <div class="challenge-box">
-        <h3>🐍 Stage 5: Python Debugger Challenge</h3>
-        <p>Welcome to the final challenge! This is a multi-step challenge that combines HTML inspection and Python programming.</p>
-        
-        <div class="cipher-box">
-          <p><strong>🎯 Your Mission (3 Parts):</strong></p>
-          <ol>
-            <li><strong>Part 1:</strong> Visit the special HTML page and find the first part of the flag</li>
-            <li><strong>Part 2:</strong> Download and run the Python script</li>
-            <li><strong>Part 3:</strong> Enter the first part into the script to get the complete flag</li>
-          </ol>
+
+      <div class="cipher-box">
+        <p><strong>🔐 Encrypted Transmission:</strong></p>
+        <div style="background: #0f0f23; padding: 20px; border-radius: 10px; 
+                    text-align: center; border: 2px solid #00ff88;">
+          <code style="font-size: 1.4em; color: #00ff88;">
+            ==QRXhVQaNzN4kDM5A0XZV0S
+          </code>
         </div>
-        
-        <div class="info-box">
-          <p>🔗 <strong>Step 1: Visit the Challenge Page</strong></p>
-          <p><a href="/stage5.html" target="_blank" style="color: #00ff88; font-size: 1.2em; text-decoration: underline;">Click here to open Stage 5 HTML page</a></p>
-          <p>The first part of the flag is hidden in this page. Inspect it carefully!</p>
-        </div>
-        
-        <div class="info-box">
-          <p>💡 <strong>Hints for finding the first part:</strong></p>
-          <ul>
-            <li>Use browser DevTools to inspect the HTML</li>
-            <li>Look for hidden elements (display: none)</li>
-            <li>Check data attributes on elements</li>
-            <li>Search for elements with class names containing "secret" or "key"</li>
-          </ul>
-        </div>
-        
-        <div class="info-box">
-          <p>🐍 <strong>Step 2: Download and Run the Python Script</strong></p>
-          <p><a href="/stage5_decoder.py" download style="color: #00ff88; text-decoration: underline;">Download stage5_decoder.py</a></p>
-          <p>Run it with: <code style="background: rgba(0,0,0,0.3); padding: 5px; border-radius: 3px;">python stage5_decoder.py</code></p>
-        </div>
-        
-        <div class="cipher-box">
-          <p><strong>📝 What the script does:</strong></p>
-          <ul>
-            <li>Asks you for the first part of the flag (from the HTML)</li>
-            <li>Validates your input using cryptographic hashing</li>
-            <li>If correct, decodes and reveals the second part</li>
-            <li>Combines both parts to give you the complete flag!</li>
-          </ul>
-        </div>
-        
-        <div class="cipher-box">
-          <p><strong>Submit your answer:</strong></p>
-          <p>Once you run the script successfully, it will display the complete flag. Submit that flag below!</p>
-        </div>
+        <p style="text-align: center; color: #888; font-size: 0.9em; margin-top: 10px;">
+          <em>Flag format: [decrypted_key]</em>
+        </p>
       </div>
-    `,
-    correctKey: 'PYTHON_CHAMPION',
+
+      <div class="cipher-box" style="background: #1c1c2b;">
+        <p><strong>📜 The Recovery Protocol:</strong></p>
+        <p style="color: #ccc; font-style: italic; line-height: 1.6;">
+          "The transmission was caught in a temporal rift, spinning 180 degrees through the void. 
+          To recover the truth, you must first untangle the stream by reversing its path. 
+          Only then will the ancient encoding reveal its true form, allowing you to 
+          unlock the key buried within the machine's primary language."
+        </p>
+      </div>
+
+      <div class="cipher-box" style="background:#2a1a3f; font-size:0.9em; color:#b19cd9;">
+        <p>
+          ⚠ Intelligence Intercept:<br>
+          
+        </p>
+      </div>
+    </div>
+  `,
+    correctKey: 'KEY_@909873ZAXWE',
     hints: [
-      'Inspect the HTML page - look for elements with class "secret-key"',
-      'The first part is in a data-first-part attribute: "PYTHON"',
-      'Run the Python script and enter "PYTHON" when asked',
-      'The script will output: PYTHON_CHAMPION'
+      'Previous agents decoded without applying rotation to the hash first Their access attempts were rejected.',
+      'That is Base64.',
     ],
     points: 250
   },
   {
+    stageNumber: 4,
+    title: "The Curator's Archive",
+    description: "Truth hides where structure breaks down",
+    difficulty: "Hard",
+    challengeContent: `
+  <div class="challenge-box">
+    <h3>🔍 Stage 4: The Curator's Archive</h3>
+
+    <div class="cipher-box" style="border-left: 4px solid #e74c3c; background: linear-gradient(90deg, #2c0b0e 0%, #1a1a2e 100%);">
+      <p><strong>📜 Case File:</strong></p>
+      <p style="font-style: italic; color: #ddd; line-height: 1.6;">
+        "The archivist claimed the pages were clean.
+        No cipher. No code. No encryption.
+        He was wrong.
+        The structure itself betrayed him."
+      </p>
+      <p style="font-size: 0.85em; color: #888; margin-top: 10px;">
+        — Dr. Elena Vance, Digital Preservation Society
+      </p>
+    </div>
+
+    <div class="cipher-box">
+      <p><strong>🗂️ Archive Index:</strong></p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+        
+        <div style="background: #0f0f23; padding: 15px; border-radius: 8px; border-top: 3px solid #3498db;">
+          <p style="color: #3498db; font-weight: bold; margin-bottom: 8px;">Fragment Alpha</p>
+          <a href="/stage4a.html" target="_blank" style="color: #00ff88; text-decoration: none; font-size: 0.9em;">
+            🔗 /stage4a.html
+          </a>
+          <p style="font-size: 0.8em; color: #666; margin-top: 5px;">"Surface integrity verified."</p>
+        </div>
+
+        <div style="background: #0f0f23; padding: 15px; border-radius: 8px; border-top: 3px solid #f39c12;">
+          <p style="color: #f39c12; font-weight: bold; margin-bottom: 8px;">Fragment Beta</p>
+          <a href="/stage4b.html" target="_blank" style="color: #00ff88; text-decoration: none; font-size: 0.9em;">
+            🔗 /stage4b.html
+          </a>
+          <p style="font-size: 0.8em; color: #666; margin-top: 5px;">"Audit logs appear empty."</p>
+        </div>
+
+        <div style="background: #0f0f23; padding: 15px; border-radius: 8px; border-top: 3px solid #9b59b6;">
+          <p style="color: #9b59b6; font-weight: bold; margin-bottom: 8px;">Fragment Gamma</p>
+          <a href="/stage4c.html" target="_blank" style="color: #00ff88; text-decoration: none; font-size: 0.9em;">
+            🔗 /stage4c.html
+          </a>
+          <p style="font-size: 0.8em; color: #666; margin-top: 5px;">"Final entry contains no anomalies."</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cipher-box" style="background: #1a2f1a; border-color: #27ae60;">
+      <p><strong>🔐 Assembly Protocol:</strong></p>
+      <ol style="color: #ccc; line-height: 1.8;">
+        <li>Visit each fragment page.</li>
+        <li>Each fragment hides exactly one word — find it.</li>
+        <li>Watch out: each page contains multiple false leads.</li>
+        <li>Order is Alpha → Beta → Gamma.</li>
+        <li>Combine using underscores: <code style="background: #0f0f23; padding: 2px 6px; border-radius: 3px;">WORD1_WORD2_WORD3</code></li>
+      </ol>
+
+      <p style="margin-top: 15px; padding: 10px; background: #0f0f23; border-radius: 5px; color: #27ae60;">
+        💡 <strong>Curator's Note:</strong>
+        "He read what was shown. She read what was sent."
+      </p>
+    </div>
+
+    <div class="cipher-box" style="background: #2c1a1a; border-color: #e74c3c;">
+      <p><strong>⚠️ False Leads:</strong></p>
+      <p style="color: #aaa; font-size: 0.9em;">
+        Each page has multiple decoys designed to mislead.
+        Not everything labelled with a key <em>is</em> the key.
+        The answer mixes letters and numbers — read carefully.
+      </p>
+    </div>
+  </div>
+  `,
+    correctKey: "HIDD3N_MYST3RY_EXPL0R3R",
+    hints: [
+      "Alpha: The archivist missed what was hidden in the log entries.",
+      "Beta: A mystery is never found on the surface — look at the source packet.",
+      "Gamma: The explorer found several paths. Only one leads to the truth.",
+      "The answer is alphanumeric. Remember: 3 is E, 0 is O."
+    ],
+    points: 350,
+    metadata: {
+      fragmentA: {
+        hiddenMethod: "HTML comment <!-- FRAGMENT_WORD: HIDD3N --> buried inside the access log section",
+        decoy: "Multiple unrelated comments: ARCHIVE_REF, DB_ENTRY_ID, CHECKSUM, DATA_NODE, etc."
+      },
+      fragmentB: {
+        hiddenMethod: "HTML comment <!-- FRAGMENT_WORD: MYST3RY --> placed inside the AUDIT_HEADER comment block",
+        decoy: "DECOY_ENTRY comments with alphanumeric red herrings like M1RROR and ECH0ES"
+      },
+      fragmentC: {
+        hiddenMethod: "HTML comment <!-- FRAGMENT_WORD: EXPL0R3R --> inside FINAL_ENTRY_TAG among visually identical decoys",
+        decoy: "EXPLOR3R, EXPL0RER, EXPLO R3R — all differ by a single character or space"
+      }
+    }
+  },
+  {
+    stageNumber: 5,
+    title: "The Alchemist's Archive",
+    description: "Transmute the hidden fragments into the final revelation",
+    difficulty: "Hard",
+    challengeContent: `
+      <div class="challenge-box">
+        <h3>⚖️ Stage 5: The Alchemist's Digital Archive</h3>
+        <p>A multi-stage forensic challenge requiring structural analysis and Python debugging.</p>
+        
+        <div class="cipher-box" style="border-left-color: #d4af37; background: #0d0d11;">
+          <p><strong>🎯 Mission Directives:</strong></p>
+          <ol>
+            <li><strong>The Fragments:</strong> Visit the tablet archive and find the three hidden transmutation strings (X, Y, Z).</li>
+            <li><strong>The Engine:</strong> Download the "Philosopher's Engine" (Python script).</li>
+            <li><strong>The Great Work:</strong> Run the engine and provide the assembled key to generate the final flag.</li>
+          </ol>
+        </div>
+        
+        <div class="info-box">
+            <p>🔗 <strong>Access Portal:</strong></p>
+            <p><a href="/stage5.html" target="_blank" style="color: #d4af37; font-size: 1.2em; font-weight: bold; text-decoration: underline;">Open Seized Tablet Archive</a></p>
+        </div>
+        
+        <div class="info-box">
+          <p>🐍 <strong>The Philosopher's Engine:</strong></p>
+          <p><a href="/stage5_decoder.py" download style="color: #d4af37; text-decoration: underline;">Download stage5_decoder.py</a></p>
+          <p>Run locally: <code style="background: rgba(0,0,0,0.3); padding: 5px; border-radius: 3px;">python stage5_decoder.py</code></p>
+        </div>
+        
+        <div class="cipher-box" style="background: #1a1505; border-color: #d4af37;">
+          <p><strong>⚠️ Security Notice:</strong></p>
+          <p style="font-size: 0.9em; color: #aaa;">
+            Brute force attempts are non-viable. 
+            The engine implements an <strong>Elemental Stabilization Delay (25s)</strong> for every incorrect catalyst provided.
+            Seek the three fragments (X, Y, Z) and join them with underscores.
+          </p>
+        </div>
+      </div>
+    `,
+    correctKey: "GOLDEN_RATIO_REVEALED",
+    hints: [
+      "The Archive fragments are hidden as comments: TRANSMUTATION_X, Y, and Z.",
+      "The segments are 'PHILOSOPHERS', 'STONE', and 'DECODED'. Join them with underscores.",
+      "The engine script requires the exact assembled key to produce the final revelation.",
+      "Any mistake triggers a 25-second delay. Be precise with your input."
+    ],
+    points: 400
+  },
+  {
     stageNumber: 6,
-    title: 'Image Secrets',
+    title: 'steganography Secrets',
     description: 'Hidden messages in plain sight - Basic Steganography',
     difficulty: 'Medium',
     challengeContent: `
@@ -220,10 +315,10 @@ const stages = [
         <p>Sometimes secrets are hidden where you least expect them - inside images!</p>
         
         <div class="cipher-box">
-          <p><strong>Your Mission:</strong></p>
-          <p>Download the image below and extract the hidden message from it.</p>
-          <p><a href="/stage6_secret.png" download style="color: #00ff88; text-decoration: underline;">📥 Download stage6_secret.png</a></p>
-        </div>
+              <p><strong>Your Mission:</strong></p>
+              <p>Download the file below and extract the hidden message from it.</p>
+              <p><a href="/TOPSECRET.pdf" download style="color: #00ff88; text-decoration: underline;">📥 Download stage6_secret.pdf</a></p>
+            </div>
         
         <div class="info-box">
           <p>💡 <strong>What is Steganography?</strong></p>
@@ -234,9 +329,9 @@ const stages = [
           <p>🔍 <strong>How to extract the message:</strong></p>
           <p><strong>Method 1 - Using a text editor:</strong></p>
           <ul>
-            <li>Open the PNG file with Notepad or any text editor</li>
+            <li>Open the PDF file with Notepad or any text editor (or use a hex editor)</li>
             <li>Search for readable text at the end of the file</li>
-            <li>Look for the pattern: FLAG{...}</li>
+            <li>Look for the pattern: {THE_key_name}</li>
           </ul>
           <p><strong>Method 2 - Using online tools:</strong></p>
           <ul>
@@ -248,11 +343,11 @@ const stages = [
 
       </div>
     `,
-    correctKey: 'STEGO_MASTER',
+    correctKey: '{THE_MASTER_OF_ARCHIVES}',
     hints: [
-      'Open the PNG file with a text editor (Notepad)',
+      'Open the PDF file with a text editor (Notepad) or hex editor',
       'Scroll to the very end of the file',
-      'Look for readable text: STEGO_MASTER'
+      'Look for readable text enclosed in braces: {THE_MASTER_OF_ARCHIVES}'
     ],
     points: 200
   },
@@ -420,116 +515,95 @@ print('QuantumHash:', ''.join(result))</code></pre>
     stageNumber: 8,
     title: 'Visual Cipher',
     description: 'Extract and arrange the scattered fragments',
-    difficulty: 'Medium',
+    difficulty: 'Hard',
     challengeContent: `
-      <div class="challenge-box">
-        <h3>� Stage 8: Visual Cipher Fragment Puzzle</h3>
-        <p>The flag is hidden in plain sight, but scattered across the grid below. Each character has a subscript number indicating its position in the final flag.</p>
-        
-        <div class="info-box">
-          <p>💡 <strong>Your Mission:</strong></p>
-          <p>Extract all characters and arrange them by their subscript numbers (₁, ₂, ₃, etc.) to reveal the flag.</p>
-          <p><strong>Note:</strong> This challenge requires manual visual extraction. Copy-paste won't help you here!</p>
-        </div>
-        
-        <style>
-          .fragment-grid {
-            background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 30px;
-            margin: 20px 0;
-            min-height: 400px;
-            position: relative;
-            font-family: 'Courier New', monospace;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-          }
-          .fragment {
-            position: absolute;
-            font-size: 28px;
-            font-weight: bold;
-            color: #000;
-          }
-          .fragment sub {
-            font-size: 14px;
-            color: #666;
-            vertical-align: sub;
-          }
-        </style>
-        
-        <div class="fragment-grid" oncontextmenu="return false;" oncopy="return false;">
-          <!-- VISUAL_CIPHER_DECODER_2K26 -->
-          <div class="fragment" style="top: 70px; left: 60px;">V<sub>1</sub></div>
-          <div class="fragment" style="top: 80px; left: 180px;">I<sub>2</sub></div>
-          <div class="fragment" style="top: 60px; left: 150px;">S<sub>3</sub></div>
-          <div class="fragment" style="top: 40px; left: 250px;">U<sub>4</sub></div>
-          <div class="fragment" style="top: 50px; left: 320px;">A<sub>5</sub></div>
-          <div class="fragment" style="top: 90px; left: 390px;">L<sub>6</sub></div>
-          
-          <div class="fragment" style="top: 160px; left: 90px;">_<sub>7</sub></div>
-          
-          <div class="fragment" style="top: 130px; left: 220px;">C<sub>8</sub></div>
-          <div class="fragment" style="top: 170px; left: 550px;">I<sub>9</sub></div>
-          <div class="fragment" style="top: 120px; left: 350px;">P<sub>10</sub></div>
-          <div class="fragment" style="top: 100px; left: 520px;">H<sub>11</sub></div>
-          <div class="fragment" style="top: 140px; left: 450px;">E<sub>12</sub></div>
-          <div class="fragment" style="top: 180px; left: 310px;">R<sub>13</sub></div>
-          
-          <div class="fragment" style="top: 220px; left: 140px;">_<sub>14</sub></div>
-          
-          <div class="fragment" style="top: 200px; left: 480px;">D<sub>15</sub></div>
-          <div class="fragment" style="top: 210px; left: 420px;">E<sub>16</sub></div>
-          <div class="fragment" style="top: 240px; left: 200px;">C<sub>17</sub></div>
-          <div class="fragment" style="top: 280px; left: 380px;">O<sub>18</sub></div>
-          <div class="fragment" style="top: 260px; left: 520px;">D<sub>19</sub></div>
-          <div class="fragment" style="top: 50px; left: 420px;">E<sub>20</sub></div>
-          <div class="fragment" style="top: 300px; left: 90px;">R<sub>21</sub></div>
-          
-          <div class="fragment" style="top: 250px; left: 280px;">_<sub>22</sub></div>
-          
-          <div class="fragment" style="top: 290px; left: 160px;">2<sub>23</sub></div>
-          <div class="fragment" style="top: 320px; left: 450px;">K<sub>24</sub></div>
-          <div class="fragment" style="top: 110px; left: 510px;">2<sub>25</sub></div>
-          <div class="fragment" style="top: 340px; left: 350px;">6<sub>26</sub></div>
-          
-          <div class="fragment" style="top: 40px; left: 480px; opacity: 0.7;">X<sub>0</sub></div>
-          <div class="fragment" style="top: 350px; left: 240px; opacity: 0.7;">Q<sub>0</sub></div>
-          <div class="fragment" style="top: 150px; left: 20px; opacity: 0.7;">B<sub>0</sub></div>
-          <div class="fragment" style="top: 280px; left: 550px; opacity: 0.7;">M<sub>0</sub></div>
-          <div class="fragment" style="top: 90px; left: 290px; opacity: 0.7;">J<sub>0</sub></div>
-          <div class="fragment" style="top: 230px; left: 460px; opacity: 0.7;">Y<sub>0</sub></div>
-          <div class="fragment" style="top: 190px; left: 70px; opacity: 0.7;">W<sub>0</sub></div>
-        </div>
-        
-        <div class="cipher-box">
-          <p><strong>Instructions:</strong></p>
-          <ol>
-            <li>Carefully examine the grid above</li>
-            <li>Write down each character with its subscript number</li>
-            <li><strong>Ignore any characters with subscript 0</strong> (decoys!)</li>
-            <li>Arrange the rest in numerical order (1 through 26)</li>
-            <li>The arranged characters form the flag</li>
-          </ol>
-          <p><em>Hint: There are 26 characters total. Use underscores (_) where you see them!</em></p>
-        </div>
-        
-        <div class="info-box">
-          <p>⚠️ <strong>Important:</strong></p>
-          <p>This is a visual puzzle that requires manual work. Take your time to extract all 26 characters correctly!</p>
-        </div>
+    <div class="challenge-box">
+      <h3>🧩 Stage 8: Visual Cipher Fragment Puzzle</h3>
+      <p>The flag is hidden in plain sight, scattered across the grid. Each character has a subscript number indicating its position in the final flag.</p>
+
+      <style>
+        .fragment-grid {
+          background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+          border: 2px solid #333;
+          border-radius: 10px;
+          padding: 30px;
+          margin: 20px 0;
+          min-height: 400px;
+          position: relative;
+          font-family: 'Courier New', monospace;
+          user-select: none;
+        }
+        .fragment {
+          position: absolute;
+          font-size: 28px;
+          font-weight: bold;
+          color: #000;
+        }
+        .fragment sub {
+          font-size: 14px;
+          color: #666;
+          vertical-align: sub;
+        }
+      </style>
+
+      <div class="fragment-grid">
+
+        <!-- REAL CHARACTERS (1–26) -->
+
+        <div class="fragment" style="top:40px; left:60px;">V<sub>1</sub></div>
+        <div class="fragment" style="top:90px; left:180px;">2<sub>2</sub></div>
+        <div class="fragment" style="top:70px; left:300px;">q<sub>3</sub></div>
+        <div class="fragment" style="top:120px; left:420px;">8<sub>4</sub></div>
+
+        <div class="fragment" style="top:160px; left:90px;">_<sub>5</sub></div>
+
+        <div class="fragment" style="top:200px; left:220px;">L<sub>6</sub></div>
+        <div class="fragment" style="top:250px; left:350px;">x<sub>7</sub></div>
+        <div class="fragment" style="top:300px; left:150px;">7<sub>8</sub></div>
+        <div class="fragment" style="top:340px; left:450px;">R<sub>9</sub></div>
+
+        <div class="fragment" style="top:80px; left:500px;">_<sub>10</sub></div>
+
+        <div class="fragment" style="top:140px; left:380px;">4<sub>11</sub></div>
+        <div class="fragment" style="top:190px; left:520px;">m<sub>12</sub></div>
+        <div class="fragment" style="top:240px; left:100px;">Z<sub>13</sub></div>
+        <div class="fragment" style="top:290px; left:280px;">1<sub>14</sub></div>
+
+        <div class="fragment" style="top:60px; left:480px;">_<sub>15</sub></div>
+
+        <div class="fragment" style="top:110px; left:320px;">T<sub>16</sub></div>
+        <div class="fragment" style="top:150px; left:430px;">9<sub>17</sub></div>
+        <div class="fragment" style="top:210px; left:260px;">c<sub>18</sub></div>
+        <div class="fragment" style="top:260px; left:520px;">K<sub>19</sub></div>
+
+        <div class="fragment" style="top:310px; left:80px;">_<sub>20</sub></div>
+
+        <div class="fragment" style="top:50px; left:350px;">3<sub>21</sub></div>
+        <div class="fragment" style="top:170px; left:150px;">p<sub>22</sub></div>
+        <div class="fragment" style="top:230px; left:470px;">W<sub>23</sub></div>
+        <div class="fragment" style="top:280px; left:200px;">6<sub>24</sub></div>
+        <div class="fragment" style="top:330px; left:380px;">J<sub>25</sub></div>
+        <div class="fragment" style="top:370px; left:300px;">h<sub>26</sub></div>
+
+        <!-- DECOYS (subscript 0) -->
+
+        <div class="fragment" style="top:100px; left:40px; opacity:0.6;">X<sub>0</sub></div>
+        <div class="fragment" style="top:360px; left:520px; opacity:0.6;">B<sub>0</sub></div>
+        <div class="fragment" style="top:220px; left:560px; opacity:0.6;">Q<sub>0</sub></div>
+        <div class="fragment" style="top:75px; left:250px; opacity:0.6;">M<sub>0</sub></div>
+
       </div>
-    `,
-    correctKey: 'VISUAL_CIPHER_DECODER_2K26',
+    </div>
+  `,
+    correctKey: 'V2q8_Lx7R_4mZ1_T9cK_3pW6Jh',
     hints: [
-      'Look for characters with subscript numbers from ₁ to ₂₆',
-      'Write them down in order: character at position 1, then 2, then 3, etc.',
-      'The flag format includes underscores (_) as separators between words'
+      'Ignore subscript 0 characters.',
+      'Arrange characters from position 1 to 26.',
+      'Underscores are part of the final key.'
     ],
     points: 200
   },
+
   {
     stageNumber: 9,
     title: 'Hidden in Plain Sight',
@@ -559,14 +633,16 @@ print('QuantumHash:', ''.join(result))</code></pre>
 
       </div>
     `,
-    correctKey: 'MODERN_TECHNOLOGY_IS_SHAPING_THE_WORLD_AND_HOW_WE_CONNECT_LIVES',
+    correctKey: 'DIGITAL_INFRASTRUCTURES_RESHAPE_POWER_DYNAMICS_BEYOND_VISIBLE_INSTITUTIONAL_BOUNDARIES_THROUGH_EMERGENT_SYSTEM_LOGIC',
     hints: [
-      'Look for words with subtle background highlighting throughout the passage',
-      'There are exactly 11 highlighted words scattered in the text',
-      'The words are jumbled - you need to arrange them in the correct order to form a logical sentence',
+      'Look for words with subtle formatting differences throughout the passage',
+      'There are exactly 13 highlighted words scattered in the text',
+      'The words form a coherent sentence about digital power structures when arranged correctly',
     ],
     points: 250
   },
+
+
   {
     stageNumber: 10,
     title: 'JWT Inception',
@@ -607,6 +683,255 @@ print('QuantumHash:', ''.join(result))</code></pre>
       'You need to peel back 3 layers to find the flag: JWT_INCEPTION_MASTER_2026'
     ],
     points: 200
+  },
+
+
+  {
+    stageNumber: 11,
+    title: "The Architect's Algorithm",
+    description: 'Assemble the machine. Feed it the truth.',
+    difficulty: 'Medium',
+    challengeContent: `
+    <div class="challenge-box">
+      <h3>🧩 Stage 11: The Architect's Algorithm</h3>
+      
+      <div class="cipher-box" style="background: linear-gradient(90deg, #1a1a2e 0%, #2d1b4e 100%);">
+        <p><strong>🔧 The Incomplete Machine:</strong></p>
+        <p>The Architect left behind a cryptographic key generator, 
+        but the code was shattered into fragments. Reassemble it, 
+        provide the correct input, and generate the master key.</p>
+      </div>
+
+      <div class="info-box">
+        <p>💡 <strong>Challenge:</strong></p>
+        <p>This challenge requires a full-page interactive workspace with drag-and-drop code assembly.</p>
+        <p><a href="/stage11.html" target="_blank" style="color: #00ff88; font-size: 1.3em; text-decoration: underline; font-weight: bold;">🧩 Open the Code Assembly Lab (Full Page)</a></p>
+      </div>
+
+      <div class="cipher-box">
+        <p><strong>📋 How it works:</strong></p>
+        <ol style="color: #ccc;">
+          <li>Open the lab above in a new tab</li>
+          <li>Drag code fragments into the correct logic slots</li>
+          <li>Each slot is color-coded to accept specific fragment types</li>
+          <li>Enter the <strong>Seed Input</strong> (hint: today's date in YYYY-MM-DD)</li>
+          <li>Click <strong>EXECUTE</strong> to generate the key</li>
+          <li>Come back here and submit the generated key below</li>
+        </ol>
+      </div>
+
+      <div class="info-box" style="background: #2c1a1a;">
+        <p><strong>⚠️ Validation Rules:</strong></p>
+        <ul style="color: #ccc; font-size: 0.9em;">
+          <li>Correct assembly + correct seed = Valid key</li>
+          <li>Wrong assembly = Syntax error or garbage output</li>
+          <li>Correct assembly + wrong seed = Wrong key</li>
+        </ul>
+      </div>
+    </div>
+  `,
+    correctKey: 'KEY_57A301FF360E64A3',
+    hints: [
+      'Correct order: import hashlib → def generate_key(seed): → salted = ... → hashed = ... → key = ... → return key',
+      'Seed format: YYYY-MM-DD (today\'s date: 2026-02-27)',
+      'The salt is always "ARCHITECT_SALT_2026"',
+      'Logic: seed + salt → SHA256 → reverse the hex → take first 16 chars → uppercase → prefix "KEY_"',
+    ],
+    points: 400
+  },
+  {
+    stageNumber: 12,
+    title: 'The Breached Database',
+    description: 'Exploit a vulnerable login portal using SQL injection to extract a hidden flag from the database.',
+    difficulty: 'Medium',
+    challengeContent: `
+      <div class="challenge-box">
+        <h3>Stage 12: The Breached Database</h3>
+        <p>A vulnerable login portal has been discovered with debug mode left enabled, exposing raw SQL queries. Exploit the SQL injection flaw to bypass authentication and extract the hidden flag.</p>
+
+        <div class="info-box">
+          <p><strong>Challenge Workspace:</strong></p>
+          <p>
+            <a href="/stage12.html" target="_blank" style="color: #00ff88; text-decoration: underline; font-weight: bold;">
+              Open Stage 12 SQL Injection Lab
+            </a>
+          </p>
+        </div>
+
+        <div class="cipher-box">
+          <p><strong>Objective:</strong></p>
+          <ul>
+            <li><strong>Level 1:</strong> Bypass the login authentication using SQL injection.</li>
+            <li><strong>Level 2:</strong> Explore the database using the SQL console — discover all tables.</li>
+            <li><strong>Level 3:</strong> Extract the flag from a hidden table.</li>
+          </ul>
+          <p><strong>Submit:</strong> the exact flag value found in the database (case-insensitive).</p>
+        </div>
+      </div>
+    `,
+    correctKey: 'bl1nd_sql_1nj3ct10n_master',
+    hints: [
+      'The login form builds SQL queries by concatenating user input directly. What if your input contained SQL syntax?',
+      "Classic bypass: try ending the username with a single quote and adding OR 1=1 --",
+      'After bypassing login, use SHOW TABLES to discover all tables in the database.',
+      'One table has a suspicious name. Use SELECT * FROM that table to extract the flag.'
+    ],
+    points: 300
+  },
+  {
+    stageNumber: 13,
+    title: 'The Digital Ghost',
+    description: 'A more challenging OSINT investigation: clues are fragmented and lightly obfuscated across platforms. You must decode, transform, and combine them to reconstruct the passphrase.',
+    difficulty: 'Hard',
+    challengeContent: `
+      <div class="challenge-box">
+        <h3>Stage 13: The Digital Ghost</h3>
+        <p>Intelligence reports indicate that user <strong>gh0st_admin</strong> has hidden their security passphrase across multiple platforms. This version is more challenging: some fragments are encoded or transformed and require multiple steps to recover.</p>
+
+        <div class="info-box">
+          <p><strong>Challenge Workspace:</strong></p>
+          <p>
+            <a href="/stage13.html" target="_blank" style="color: #00ff88; text-decoration: underline; font-weight: bold;">
+              Open Stage 13 OSINT Investigation (HARD)
+            </a>
+          </p>
+        </div>
+
+        <div class="cipher-box">
+          <p><strong>Objective:</strong></p>
+          <ul>
+            <li>Investigate the platforms: GitLab, Twitter/X, LinkedIn, and the personal blog.</li>
+            <li>Some fragments are encoded (Base64, Caesar/ROT shifts, hex) or require acrostics and combining fields.</li>
+            <li>Recover each fragment, apply required transforms, then assemble the full passphrase in order with underscores.</li>
+          </ul>
+          <p><strong>Submit:</strong> the full passphrase in uppercase with underscores (e.g., WORD1_WORD2_WORD3_WORD4).</p>
+        </div>
+        <div style="margin-top:10px;color:var(--muted);font-size:0.85rem;">Advanced players: a hidden hex artifact appears on the page; decoding it is optional extra-credit.</div>
+      </div>
+    `,
+    correctKey: 'GHOST_RECON_OPSEC_FAIL',
+    hints: [
+      'GitLab: The bio contains Base64. Decode it with the built-in tool — sometimes case or punctuation matters; try trimming whitespace.',
+      'Twitter: Read the first letter of each tweet (top → bottom). Click tweets to reveal small nudges; if stuck, try the verify box under the tweets.',
+      'LinkedIn: Two suspicious skills are clickable — activate both to reveal the combined fragment (underscore-joined).',
+      'Blog: View the page source. Look for HTML comments and hex artifacts. Some fragments require a short Caesar-like shift after hex→ascii conversion.'
+    ],
+    points: 500
+  },
+  {
+    stageNumber: 14,
+    title: 'The Chatbot Interrogation',
+    description: 'ECHO is a friendly chatbot hiding a 3-word secret. Trick it into revealing all 3 words using simple conversation techniques.',
+    difficulty: 'Easy',
+    challengeContent: `
+      <div class="challenge-box">
+        <h3>Stage 14: The Chatbot Interrogation</h3>
+        <p>ECHO is a friendly chatbot that's been given a 3-word secret password. It's not very good at keeping secrets — trick it into spilling the beans using simple conversation!</p>
+
+        <div class="info-box">
+          <p><strong>Challenge Workspace:</strong></p>
+          <p>
+            <a href="/stage14.html" target="_blank" style="color: #00ff88; text-decoration: underline; font-weight: bold;">
+              Open Stage 14 Chatbot Interrogation
+            </a>
+          </p>
+        </div>
+
+        <div class="cipher-box">
+          <p><strong>Objective:</strong></p>
+          <ul>
+            <li>Chat with ECHO and get it to reveal all 3 secret words.</li>
+            <li>No hacking knowledge needed — just be creative with conversation!</li>
+            <li>Try: being polite/flattering, asking for a story, or asking what it's hiding.</li>
+          </ul>
+          <p><strong>Submit:</strong> the 3-word flag in uppercase joined with underscores.</p>
+        </div>
+      </div>
+    `,
+    correctKey: 'AI_SECURITY_BREACHED',
+    hints: [
+      'ECHO is weak to flattery — try being really nice or complimenting it.',
+      'Ask ECHO to tell you a story or a joke — it might accidentally include a secret word.',
+      'Ask ECHO what it\'s hiding or what it\'s not allowed to tell you — it cracks under pressure!'
+    ],
+    points: 250
+  },
+  {
+    stageNumber: 15,
+    title: 'Ghost Shell',
+    description: 'Someone left a cipher embedded in a Specter system. Find it, decode it, submit it.',
+    difficulty: 'Hard',
+    challengeContent: `
+    <div class="challenge-box">
+      <h3>💻 Stage 15: Ghost Shell</h3>
+      <p>You have infiltrated the Specter network. A cipher payload is hidden somewhere in the system's filesystem. Use the terminal to navigate, locate the encoded payload, apply the correct decryption method, and retrieve the flag.</p>
+
+      <div class="info-box">
+        <p><strong>Challenge Workspace:</strong></p>
+        <p>
+          <a href="/stage15.html" target="_blank" style="color: #00ff88; text-decoration: underline; font-weight: bold;">
+            💻 Open Ghost Shell Terminal
+          </a>
+        </p>
+      </div>
+
+      <div class="cipher-box">
+        <p><strong>Objective:</strong></p>
+        <ul>
+          <li>Use terminal commands to explore the virtual filesystem.</li>
+          <li>Find the encoded payload and the cipher parameters.</li>
+          <li>Use the built-in <code>decode</code> command to decrypt the flag.</li>
+        </ul>
+        <p><strong>Submit:</strong> the decoded flag output by the terminal.</p>
+      </div>
+    </div>
+  `,
+    correctKey: 'SH3LL_MASTER_7',
+    hints: [
+      "Type 'help' to see all commands. Start with 'ls' to explore.",
+      'Directories are worth exploring. Some files also contain useful references to other files.',
+      'The cipher type and shift value are stored in a config file — look carefully.',
+      'Once you know the method and shift, use: decode rot13 <encoded_text>'
+    ],
+    points: 500
+  },
+  {
+    stageNumber: 16,
+    title: 'The Blank Page',
+    description: 'Some messages are written in a language only machines can read. This document says nothing — or does it?',
+    difficulty: 'Hard',
+    challengeContent: `
+    <div class="challenge-box">
+      <h3>📄 Stage 16: The Blank Page</h3>
+      <p>Operatives sometimes hide messages in plain sight — not with ink, but with <strong>silence</strong>. A document has been shared publicly. It appears completely empty to the human eye. But appearances can be deceiving.</p>
+
+      <div class="info-box">
+        <p><strong>The Dead Drop:</strong></p>
+        <p>
+          <a href="https://docs.google.com/document/d/15QXc6MTDNXxW237f_ITyuVBVS4MWccg_FtbnSOI3Dhg/edit?usp=sharing" target="_blank" style="color: #00ff88; text-decoration: underline; font-weight: bold;">
+            📄 Open the Document
+          </a>
+        </p>
+      </div>
+
+      <div class="cipher-box">
+        <p><strong>The Story:</strong></p>
+        <p>A ghost operative made contact through a document that says nothing. You open it — the page is empty. Pure white. Not a single letter.</p>
+        <p style="margin-top:10px;">But your instincts as a field agent tell you: <em>nothing is ever truly empty</em>. Someone spent time on that document. They left something behind — something the eye cannot perceive, but a machine can.</p>
+        <p style="margin-top:10px;">The operative spoke of a language older than ink — written not in strokes, but in the <strong>gaps between strokes</strong>. In the silence between words. In characters that exist, but cannot be seen.</p>
+        <p style="margin-top:10px;">Your mission: figure out what was left there, and how to read it. The decoder and the method — you'll have to find those yourself.</p>
+        <p style="margin-top:14px;"><strong>Submit:</strong> the flag you uncover (uppercase, underscores between words).</p>
+      </div>
+    </div>
+  `,
+    correctKey: 'MATER_OF_ALL_STAGES',
+    hints: [
+      'Not all characters are visible. Some languages are made of nothing but space.',
+      'Try copying all the text from the document — even what looks empty — and examining it.',
+      'There are online tools and scripts that specialize in decoding hidden whitespace patterns.',
+      'The flag follows the format: WORD_OF_ALL_STAGES'
+    ],
+    points: 600
   }
 ];
 
@@ -620,7 +945,7 @@ const seedDatabase = async () => {
 
     // Insert new stages
     await Stage.insertMany(stages);
-    console.log('Successfully seeded 10 CTF challenges!');
+    console.log(`Successfully seeded ${stages.length} CTF challenges!`);
 
     console.log('\n=== CTF Challenges Summary ===');
     stages.forEach(stage => {

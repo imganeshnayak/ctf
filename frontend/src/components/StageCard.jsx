@@ -34,6 +34,13 @@ const StageCard = ({ stage, onClick }) => {
         <div
             className={cardClass}
             onClick={() => !locked && onClick(stage)}
+            role="button"
+            tabIndex={locked ? -1 : 0}
+            onKeyPress={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && !locked) {
+                    onClick(stage);
+                }
+            }}
         >
             <div className="stage-header">
                 <div className="stage-number">#{stageNumber}</div>

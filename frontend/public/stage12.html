@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage 12 – The Breached Database</title>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --panel: #111927;
+      --panel2: #182236;
+      --border: #2a3a5c;
+      --text: #e0e8f5;
+      --muted: #8899b8;
+      --green: #00ff88;
+      --red: #ff4d5e;
+      --orange: #ffa94d;
+      --cyan: #06d6f0;
+      --purple: #a78bfa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Courier New', monospace;
+      background: radial-gradient(ellipse at 30% 10%, #141e3a 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { font-size: 1.6rem; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.3); }
+    .header p { color: var(--muted); margin-top: 6px; font-size: 0.9rem; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .panel h2 { font-size: 1rem; color: var(--cyan); margin-bottom: 12px; }
+    .level-indicator { display: flex; gap: 12px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .level-step {
+      padding: 8px 18px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+      background: var(--panel2); border: 1px solid var(--border); color: var(--muted); transition: all 0.3s;
+    }
+    .level-step.active { background: rgba(0,255,136,0.15); border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(0,255,136,0.2); }
+    .level-step.done { background: rgba(0,255,136,0.08); border-color: #2a6b4a; color: #2a6b4a; text-decoration: line-through; }
+
+    .login-box {
+      background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px; max-width: 500px; margin: 0 auto;
+    }
+    .login-box h3 { text-align: center; color: var(--orange); margin-bottom: 14px; font-size: 0.95rem; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 4px; }
+    .form-group input {
+      width: 100%; padding: 10px 12px; background: #0d1520; border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); font-family: 'Courier New', monospace; font-size: 0.9rem;
+    }
+    .form-group input:focus { outline: none; border-color: var(--cyan); }
+    .btn {
+      padding: 10px 20px; border: none; border-radius: 6px; font-family: 'Courier New', monospace;
+      font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+    }
+    .btn-login { background: var(--orange); color: #000; width: 100%; margin-top: 8px; }
+    .btn-login:hover { background: #ffbe76; }
+
+    .sql-preview {
+      background: #0a0f1a; border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px; margin-top: 14px; font-size: 0.85rem; overflow-x: auto; word-break: break-all;
+    }
+    .sql-preview .keyword { color: var(--cyan); }
+    .sql-preview .string { color: var(--orange); }
+    .sql-preview .table { color: var(--purple); }
+    .sql-preview .inject { color: var(--red); text-decoration: underline wavy var(--red); }
+
+    .result-box {
+      margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 0.85rem; display: none;
+    }
+    .result-box.success { display: block; background: rgba(0,255,136,0.08); border: 1px solid var(--green); color: var(--green); }
+    .result-box.error { display: block; background: rgba(255,77,94,0.08); border: 1px solid var(--red); color: var(--red); }
+
+    .console-section { display: none; }
+    .console-section.visible { display: block; }
+    .sql-console { background: #050a12; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .console-input-row { display: flex; gap: 8px; align-items: center; }
+    .console-prompt { color: var(--green); font-weight: bold; white-space: nowrap; }
+    .console-input {
+      flex: 1; background: transparent; border: none; color: var(--text);
+      font-family: 'Courier New', monospace; font-size: 0.9rem; outline: none;
+    }
+    .btn-exec {
+      background: var(--green); color: #000; padding: 6px 14px; border: none; border-radius: 4px;
+      font-family: 'Courier New', monospace; font-weight: bold; cursor: pointer; font-size: 0.8rem;
+    }
+    .btn-exec:hover { background: #33ffaa; }
+
+    .console-output {
+      margin-top: 12px; background: #080d18; border: 1px solid #1a2540; border-radius: 6px;
+      padding: 12px; min-height: 80px; max-height: 350px; overflow-y: auto; font-size: 0.82rem; line-height: 1.6;
+    }
+    .console-output .row-header { color: var(--cyan); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 6px; }
+    .console-output .row-data { color: var(--text); }
+    .console-output .row-data.flag-row { color: var(--green); font-weight: bold; text-shadow: 0 0 8px rgba(0,255,136,0.4); }
+    .console-output .error-msg { color: var(--red); }
+    .console-output .info-msg { color: var(--muted); }
+
+    .schema-panel {
+      background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-top: 12px;
+    }
+    .schema-panel h4 { color: var(--purple); font-size: 0.85rem; margin-bottom: 8px; }
+    .schema-table { font-size: 0.78rem; margin-bottom: 8px; }
+    .schema-table .tname { color: var(--cyan); cursor: pointer; }
+    .schema-table .tname:hover { text-decoration: underline; }
+    .schema-table .cols { color: var(--muted); margin-left: 16px; display: none; }
+    .schema-table .cols.open { display: block; }
+    .db-grid { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+    @media (max-width: 800px) { .db-grid { grid-template-columns: 1fr; } }
+    .hint-text { color: var(--muted); font-size: 0.8rem; margin-top: 8px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>&#128451; The Breached Database</h1>
+      <p>A vulnerable login portal has been discovered. Exploit the SQL injection flaw to extract the hidden flag.</p>
+    </div>
+
+    <div class="level-indicator">
+      <div class="level-step active" id="lvl1-ind">Level 1: Bypass Auth</div>
+      <div class="level-step" id="lvl2-ind">Level 2: Explore DB</div>
+      <div class="level-step" id="lvl3-ind">Level 3: Extract Flag</div>
+    </div>
+
+    <!-- LEVEL 1: Login Bypass -->
+    <div id="level1" class="panel">
+      <h2>&#128274; SecureAuth&#8482; Login Portal v3.2.1</h2>
+      <div class="login-box">
+        <h3>&#9888;&#65039; INTERNAL USE ONLY &#8211; Authorized Personnel</h3>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="loginUser" placeholder="Enter username..." autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="text" id="loginPass" placeholder="Enter password..." autocomplete="off">
+        </div>
+        <button class="btn btn-login" id="loginBtn">&#128275; Authenticate</button>
+      </div>
+
+      <div class="sql-preview" id="sqlPreview">
+        <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="table">users</span>
+        <span class="keyword">WHERE</span> username = '<span id="prevUser" class="string"></span>'
+        <span class="keyword">AND</span> password = '<span id="prevPass" class="string"></span>'
+      </div>
+      <p class="hint-text">&#128161; Debug mode enabled &#8212; the raw SQL query is visible above. How is user input handled?</p>
+
+      <div class="result-box" id="loginResult"></div>
+    </div>
+
+    <!-- LEVEL 2 & 3: SQL Console -->
+    <div id="level2" class="console-section">
+      <div class="panel">
+        <h2>&#128187; Database Explorer Console</h2>
+        <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;">
+          Authentication bypassed! You now have direct query access. Find the hidden flag.
+        </p>
+        <div class="db-grid">
+          <div>
+            <div class="schema-panel" id="schemaPanel">
+              <h4>&#128203; Discovered Tables</h4>
+              <p class="info-msg" id="schemaHint">Run queries to discover the database schema...</p>
+              <div id="schemaList"></div>
+            </div>
+            <p class="hint-text" style="margin-top:10px;">Try: SHOW TABLES or SELECT * FROM information_schema.tables</p>
+          </div>
+          <div>
+            <div class="sql-console">
+              <div class="console-input-row">
+                <span class="console-prompt">SQL&gt;</span>
+                <input type="text" class="console-input" id="sqlInput" placeholder="Enter SQL query..." autocomplete="off">
+                <button class="btn-exec" id="execBtn">RUN</button>
+              </div>
+            </div>
+            <div class="console-output" id="consoleOutput">
+              <span class="info-msg">Welcome to the database console.<br>Type SQL queries to explore. Try discovering what tables exist.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== SIMULATED DATABASE ===== */
+    const DB = {
+      users: {
+        columns: ['id', 'username', 'password', 'role'],
+        rows: [
+          [1, 'admin', 'sup3r_s3cur3_2026', 'admin'],
+          [2, 'jdoe', 'password123', 'user'],
+          [3, 'analyst', 'an@lyst!', 'user'],
+          [4, 'guest', 'guest', 'readonly']
+        ]
+      },
+      sessions: {
+        columns: ['session_id', 'user_id', 'ip_address', 'expires'],
+        rows: [
+          ['sess_a9f2', 1, '10.0.0.1', '2026-03-10'],
+          ['sess_c4b1', 2, '10.0.0.45', '2026-03-08'],
+          ['sess_d8e7', 4, '10.0.0.99', '2026-03-06']
+        ]
+      },
+      logs: {
+        columns: ['log_id', 'action', 'user_id', 'timestamp'],
+        rows: [
+          [101, 'LOGIN_SUCCESS', 1, '2026-03-01 09:14:22'],
+          [102, 'QUERY_EXEC', 1, '2026-03-01 09:15:03'],
+          [103, 'LOGIN_FAIL', 5, '2026-03-02 14:22:11'],
+          [104, 'PERM_CHANGE', 1, '2026-03-03 08:00:55']
+        ]
+      },
+      s3cr3t_flags: {
+        columns: ['flag_id', 'flag_name', 'flag_value', 'classification'],
+        rows: [
+          [1, 'stage12_key', 'bl1nd_sql_1nj3ct10n_master', 'TOP_SECRET'],
+          [2, 'decoy_1', 'not_the_flag_sorry', 'UNCLASSIFIED'],
+          [3, 'decoy_2', 'try_harder_hacker', 'CONFIDENTIAL']
+        ]
+      }
+    };
+
+    let currentLevel = 1;
+    let discoveredTables = new Set();
+
+    /* ===== LEVEL 1: LOGIN BYPASS ===== */
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const prevUser  = document.getElementById('prevUser');
+    const prevPass  = document.getElementById('prevPass');
+    const loginResult = document.getElementById('loginResult');
+
+    function updatePreview() {
+      prevUser.textContent = loginUser.value;
+      prevPass.textContent = loginPass.value;
+      const combined = loginUser.value + loginPass.value;
+      const markers = ["'", '--', 'OR', 'or', 'UNION', 'union', '1=1', ';'];
+      const hasInj = markers.some(m => combined.includes(m));
+      prevUser.className = hasInj ? 'inject' : 'string';
+      prevPass.className = hasInj ? 'inject' : 'string';
+    }
+    loginUser.addEventListener('input', updatePreview);
+    loginPass.addEventListener('input', updatePreview);
+
+    function checkSQLInjection(u, p) {
+      const patterns = [
+        /'\s*(or|OR)\s+.*(=|1|true)/i,
+        /'\s*;\s*--/i,
+        /'\s*--/i,
+        /admin'\s*--/i,
+        /'\s*or\s+'.*'\s*=\s*'/i,
+        /1\s*=\s*1/i,
+        /'\s*or\s+1/i
+      ];
+      return patterns.some(p2 => p2.test(u)) || patterns.some(p2 => p2.test(p));
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const u = loginUser.value.trim();
+      const p = loginPass.value.trim();
+      if (!u && !p) { showLogin('error', '&#10060; Please enter credentials.'); return; }
+      const validUser = DB.users.rows.find(r => r[1] === u && r[2] === p);
+      if (validUser) {
+        showLogin('success', '&#9989; Authenticated as "' + esc(validUser[1]) + '" &#8212; but this isn\'t the challenge. Try exploiting the vulnerability.');
+        return;
+      }
+      if (checkSQLInjection(u, p)) {
+        showLogin('success', '&#9989; SQL INJECTION DETECTED &#8212; Authentication Bypassed!<br>&#128275; Access granted to database console.');
+        setTimeout(unlockLevel2, 800);
+      } else {
+        showLogin('error', '&#10060; Authentication failed. Invalid credentials.<br><span style="font-size:0.8rem;color:var(--muted);">Look at the SQL query preview. What if your input breaks the query syntax?</span>');
+      }
+    });
+    loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+    loginUser.addEventListener('keydown', e => { if (e.key === 'Enter') loginPass.focus(); });
+
+    function showLogin(type, msg) { loginResult.className = 'result-box ' + type; loginResult.innerHTML = msg; }
+
+    function unlockLevel2() {
+      currentLevel = 2;
+      document.getElementById('lvl1-ind').classList.replace('active', 'done');
+      document.getElementById('lvl2-ind').classList.add('active');
+      document.getElementById('level2').classList.add('visible');
+      document.getElementById('level2').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* ===== LEVEL 2 & 3: SQL CONSOLE ===== */
+    const sqlInput = document.getElementById('sqlInput');
+    const consoleOutput = document.getElementById('consoleOutput');
+
+    document.getElementById('execBtn').addEventListener('click', exec);
+    sqlInput.addEventListener('keydown', e => { if (e.key === 'Enter') exec(); });
+
+    function exec() {
+      const raw = sqlInput.value.trim();
+      if (!raw) return;
+      const q = raw.toLowerCase().replace(/\s+/g, ' ').trim();
+      sqlInput.value = '';
+      out('<span class="info-msg">SQL&gt; ' + esc(raw) + '</span>');
+
+      if (/show\s+table|^\\dt$|^\.tables$/.test(q)) handleShowTables();
+      else if (/information_schema|sqlite_master|sys\.tables/.test(q)) handleInfoSchema();
+      else if (/^select\s+\*\s+from\s+\w+/.test(q) && !q.includes('union') && !q.includes('where')) handleSelectAll(q);
+      else if (/^select\s+[\w,\s]+\s+from\s+\w+/.test(q) && !q.includes('*') && !q.includes('union')) handleSelectCols(q);
+      else if (q.includes('union')) handleUnion(q);
+      else if (/^(describe|desc|\\d)\s+/.test(q)) handleDesc(q);
+      else if (/drop|delete|truncate|alter/.test(q)) out('<span class="error-msg">&#9888;&#65039; ERROR 1142: DROP/DELETE denied. Read-only access.</span>');
+      else if (/insert|update/.test(q)) out('<span class="error-msg">&#9888;&#65039; ERROR 1142: Write operations denied. Read-only access.</span>');
+      else out('<span class="error-msg">ERROR 1064: Unrecognized query. Try SELECT, SHOW TABLES, or DESCRIBE.</span>');
+    }
+
+    function handleShowTables() {
+      const tables = Object.keys(DB);
+      let h = '<div class="row-header">| table_name |</div>';
+      tables.forEach(t => { h += '<div class="row-data">| ' + t + ' |</div>'; discover(t); });
+      h += '<br><span class="info-msg">' + tables.length + ' tables found.</span>';
+      out(h);
+    }
+    function handleInfoSchema() {
+      const tables = Object.keys(DB);
+      let h = '<div class="row-header">| TABLE_NAME | COLUMN_COUNT | ROW_COUNT |</div>';
+      tables.forEach(t => { h += '<div class="row-data">| ' + t + ' | ' + DB[t].columns.length + ' | ' + DB[t].rows.length + ' |</div>'; discover(t); });
+      out(h);
+    }
+    function handleSelectAll(q) {
+      const m = q.match(/from\s+(\w+)/);
+      if (!m) { out('<span class="error-msg">ERROR: Could not parse table name.</span>'); return; }
+      renderTable(m[1]);
+    }
+    function handleSelectCols(q) {
+      const m = q.match(/^select\s+([\w,\s]+)\s+from\s+(\w+)/);
+      if (!m) { out('<span class="error-msg">ERROR: Could not parse query.</span>'); return; }
+      renderTable(m[2], m[1].split(',').map(c => c.trim()));
+    }
+    function handleUnion(q) {
+      const tables = new Set();
+      for (const m of q.matchAll(/from\s+(\w+)/g)) tables.add(m[1]);
+      Object.keys(DB).forEach(t => { if (q.includes(t)) tables.add(t); });
+      if (tables.size === 0) { out('<span class="error-msg">ERROR 1064: UNION must reference valid tables.</span>'); return; }
+      out('<span class="info-msg">-- UNION result across: ' + [...tables].join(', ') + ' --</span>');
+      tables.forEach(t => renderTable(t));
+    }
+    function handleDesc(q) {
+      const t = q.split(/\s+/)[1];
+      if (!t || !DB[t]) { out('<span class="error-msg">ERROR 1146: Table \'' + esc(t || '') + '\' doesn\'t exist.</span>'); return; }
+      discover(t);
+      let h = '<div class="row-header">| Column | Type |</div>';
+      DB[t].columns.forEach(c => { h += '<div class="row-data">| ' + c + ' | VARCHAR(255) |</div>'; });
+      out(h);
+    }
+
+    function renderTable(tname, filterCols) {
+      const table = DB[tname];
+      if (!table) { out('<span class="error-msg">ERROR 1146: Table \'' + esc(tname) + '\' doesn\'t exist.</span>'); return; }
+      discover(tname);
+      const cols = filterCols ? filterCols.filter(c => table.columns.includes(c)) : table.columns;
+      if (cols.length === 0) { out('<span class="error-msg">ERROR 1054: Unknown column(s). Available: ' + table.columns.join(', ') + '</span>'); return; }
+      const idx = cols.map(c => table.columns.indexOf(c));
+      let h = '<div class="row-header">| ' + cols.join(' | ') + ' |</div>';
+      table.rows.forEach(row => {
+        const vals = idx.map(i => row[i]);
+        const isFlag = tname === 's3cr3t_flags' && String(row[2]).includes('bl1nd');
+        h += '<div class="row-data' + (isFlag ? ' flag-row' : '') + '">| ' + vals.join(' | ') + ' |</div>';
+      });
+      h += '<br><span class="info-msg">' + table.rows.length + ' row(s) returned from ' + tname + '.</span>';
+      out(h);
+      if (tname === 's3cr3t_flags') markLevel3();
+    }
+
+    function discover(t) {
+      if (discoveredTables.has(t)) return;
+      discoveredTables.add(t);
+      const sl = document.getElementById('schemaList');
+      document.getElementById('schemaHint').style.display = 'none';
+      let h = '';
+      discoveredTables.forEach(tn => {
+        const isF = tn === 's3cr3t_flags';
+        h += '<div class="schema-table"><div class="tname" onclick="this.nextElementSibling.classList.toggle(\'open\')">' +
+          (isF ? '&#128681;' : '&#128193;') + ' ' + tn + '</div><div class="cols">' +
+          DB[tn].columns.map(c => '  &#9500;&#9472; ' + c).join('<br>') + '</div></div>';
+      });
+      sl.innerHTML = h;
+    }
+
+    function markLevel3() {
+      document.getElementById('lvl2-ind').classList.replace('active', 'done');
+      document.getElementById('lvl3-ind').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('lvl3-ind').classList.replace('active', 'done');
+        out('<br><span style="color:var(--green);font-size:1.1rem;font-weight:bold;">&#127942; FLAG EXTRACTED! Copy the flag_value from s3cr3t_flags and submit it.</span>');
+      }, 600);
+    }
+
+    function out(h) {
+      consoleOutput.innerHTML += '<div style="margin-bottom:6px;">' + h + '</div>';
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  </script>
+</body>
+</html>

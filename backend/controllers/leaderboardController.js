@@ -34,25 +34,29 @@ export const getLeaderboard = async (req, res) => {
 
         // Sort by:
         // 1. Number of completed stages (descending)
-        // 2. Earliest first completion time (ascending - earlier is better)
-        // 3. Total score (descending) as final tie-breaker
+        // 2. Total score (descending) - Rewards avoiding hints
+        // 3. Earliest first completion time (ascending) - Fine-grained tie-breaker
         rankedUsers.sort((a, b) => {
             // Primary: More completed stages is better
             if (b.completedStages !== a.completedStages) {
                 return b.completedStages - a.completedStages;
             }
 
-            // Secondary: Earlier completion time is better (for users with same completions)
+            // Secondary: Higher score is better (rewards those who didn't use hints)
+            if (b.totalScore !== a.totalScore) {
+                return b.totalScore - a.totalScore;
+            }
+
+            // Tertiary: Earlier completion time is better (tie-breaker for same completions and score)
             if (a.firstCompletionTime && b.firstCompletionTime) {
                 return new Date(a.firstCompletionTime) - new Date(b.firstCompletionTime);
             }
 
-            // If one has completion time and other doesn't, prioritize the one with time
+            // If one has completion time and other doesn't
             if (a.firstCompletionTime && !b.firstCompletionTime) return -1;
             if (!a.firstCompletionTime && b.firstCompletionTime) return 1;
 
-            // Tertiary: Higher score is better
-            return b.totalScore - a.totalScore;
+            return 0;
         });
 
         // Add rank position

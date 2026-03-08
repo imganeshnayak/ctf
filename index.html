@@ -1,0 +1,202 @@
+{
+  stageNumber: 16,
+  title: 'The Architect\'s Algorithm',
+  description: 'Assemble the machine. Feed it the truth.',
+  difficulty: 'Medium',
+  challengeContent: `
+    <div class="challenge-box">
+      <h3>🧩 Stage 16: The Architect's Algorithm</h3>
+      
+      <div class="cipher-box" style="background: linear-gradient(90deg, #1a1a2e 0%, #2d1b4e 100%);">
+        <p><strong>🔧 The Incomplete Machine:</strong></p>
+        <p>The Architect left behind a cryptographic key generator, 
+        but the code was shattered into fragments. Reassemble it, 
+        provide the correct input, and generate the master key.</p>
+      </div>
+
+      <div class="info-box">
+        <p><strong>📋 Instructions:</strong></p>
+        <ol style="color: #ccc;">
+          <li>Drag code fragments from the <strong>Fragment Pool</strong> into the <strong>Logic Slots</strong></li>
+          <li>Each slot accepts only specific types (color-coded)</li>
+          <li>When complete, enter the <strong>Seed Input</strong> (hint: today's date)</li>
+          <li>Click <strong>EXECUTE</strong> to generate the key</li>
+          <li>Wrong assemblies produce garbage; correct assembly reveals truth</li>
+        </ol>
+      </div>
+
+      <div class="cipher-box" style="background: #0f0f23; border: 2px solid #00ff88;">
+        <div id="code-assembly-interface" style="font-family: 'Courier New', monospace;">
+          
+          <!-- TARGET SLOTS (Where fragments go) -->
+          <div style="margin-bottom: 20px;">
+            <p style="color: #888; font-size: 0.9em;">LINE 1: [IMPORTS]</p>
+            <div class="drop-zone" data-slot="import" data-accept="import" 
+                 style="min-height: 30px; background: #1a2332; border: 2px dashed #3498db; 
+                        border-radius: 5px; padding: 10px; margin: 5px 0;">
+              <span style="color: #666;">Drop import statement here...</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="color: #888; font-size: 0.9em;">LINE 2: [FUNCTION DEFINITION]</p>
+            <div class="drop-zone" data-slot="def" data-accept="def" 
+                 style="min-height: 30px; background: #1a2332; border: 2px dashed #e74c3c; 
+                        border-radius: 5px; padding: 10px; margin: 5px 0;">
+              <span style="color: #666;">Drop function definition here...</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="color: #888; font-size: 0.9em;">LINE 3: [CORE LOGIC - PART A]</p>
+            <div class="drop-zone" data-slot="logic1" data-accept="logic" 
+                 style="min-height: 30px; background: #1a2332; border: 2px dashed #f39c12; 
+                        border-radius: 5px; padding: 10px; margin: 5px 0;">
+              <span style="color: #666;">Drop first logic fragment...</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="color: #888; font-size: 0.9em;">LINE 4: [CORE LOGIC - PART B]</p>
+            <div class="drop-zone" data-slot="logic2" data-accept="logic" 
+                 style="min-height: 30px; background: #1a2332; border: 2px dashed #f39c12; 
+                        border-radius: 5px; padding: 10px; margin: 5px 0;">
+              <span style="color: #666;">Drop second logic fragment...</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="color: #888; font-size: 0.9em;">LINE 5: [RETURN STATEMENT]</p>
+            <div class="drop-zone" data-slot="return" data-accept="return" 
+                 style="min-height: 30px; background: #1a2332; border: 2px dashed #27ae60; 
+                        border-radius: 5px; padding: 10px; margin: 5px 0;">
+              <span style="color: #666;">Drop return statement here...</span>
+            </div>
+          </div>
+
+          <!-- FRAGMENT POOL (Draggable items) -->
+          <div style="margin-top: 30px; border-top: 2px solid #2d3748; padding-top: 20px;">
+            <p style="color: #00ff88; margin-bottom: 15px;">🔀 FRAGMENT POOL (Drag to slots above):</p>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <!-- IMPORTS (Blue) -->
+              <div class="code-fragment" draggable="true" data-type="import" 
+                   style="background: #3498db; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                import hashlib
+              </div>
+              <div class="code-fragment" draggable="true" data-type="import" 
+                   style="background: #3498db; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                import random
+              </div>
+              <div class="code-fragment" draggable="true" data-type="import" 
+                   style="background: #3498db; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                import base64
+              </div>
+
+              <!-- DEFINITIONS (Red) -->
+              <div class="code-fragment" draggable="true" data-type="def" 
+                   style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                def generate_key(seed):
+              </div>
+              <div class="code-fragment" draggable="true" data-type="def" 
+                   style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                def create_hash(input_str):
+              </div>
+              <div class="code-fragment" draggable="true" data-type="def" 
+                   style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                def encode_data(data):
+              </div>
+
+              <!-- LOGIC PART A (Orange) -->
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                salted = seed + "ARCHITECT_SALT_2026"
+              </div>
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                hashed = hashlib.sha256(salted.encode()).hexdigest()
+              </div>
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                reversed_hash = hashed[::-1]
+              </div>
+
+              <!-- LOGIC PART B (Orange) -->
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                key = "KEY_" + reversed_hash[:16].upper()
+              </div>
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                final = base64.b64encode(key.encode()).decode()
+              </div>
+              <div class="code-fragment" draggable="true" data-type="logic" 
+                   style="background: #f39c12; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                checksum = sum(ord(c) for c in key) % 256
+              </div>
+
+              <!-- RETURNS (Green) -->
+              <div class="code-fragment" draggable="true" data-type="return" 
+                   style="background: #27ae60; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                return key
+              </div>
+              <div class="code-fragment" draggable="true" data-type="return" 
+                   style="background: #27ae60; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                return final + "_" + str(checksum)
+              </div>
+              <div class="code-fragment" draggable="true" data-type="return" 
+                   style="background: #27ae60; color: white; padding: 8px 12px; border-radius: 5px; cursor: move;">
+                return hashed
+              </div>
+            </div>
+          </div>
+
+          <!-- INPUT SECTION -->
+          <div style="margin-top: 30px; padding: 20px; background: #1a2332; border-radius: 8px;">
+            <p style="color: #888; margin-bottom: 10px;">🌱 SEED INPUT (Required for execution):</p>
+            <input type="text" id="seed-input" placeholder="Enter seed (hint: YYYY-MM-DD format)..." 
+                   style="width: 100%; padding: 12px; background: #0f0f23; color: #00ff88; 
+                          border: 1px solid #00ff88; border-radius: 5px; font-family: monospace;">
+            <p style="font-size: 0.8em; color: #666; margin-top: 5px;">
+              💡 The Architect always used today's date as his master seed
+            </p>
+          </div>
+
+          <!-- EXECUTE BUTTON -->
+          <button onclick="executeCode()" 
+                  style="width: 100%; margin-top: 20px; padding: 15px; background: linear-gradient(90deg, #00ff88, #00cc6a); 
+                         color: #0a0e1a; border: none; border-radius: 5px; font-weight: bold; font-size: 1.1em; cursor: pointer;">
+            ⚡ EXECUTE ALGORITHM
+          </button>
+
+          <!-- OUTPUT DISPLAY -->
+          <div id="execution-output" 
+               style="margin-top: 20px; padding: 20px; background: #0f0f23; border-radius: 8px; 
+                      border: 1px solid #2d3748; min-height: 60px; display: none;">
+            <p style="color: #888; margin-bottom: 10px;">🔮 OUTPUT:</p>
+            <div id="output-content" style="font-family: monospace; color: #00ff88; font-size: 1.2em;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box" style="background: #2c1a1a;">
+        <p><strong>⚠️ Validation Rules:</strong></p>
+        <ul style="color: #ccc; font-size: 0.9em;">
+          <li>Correct assembly + correct seed = Valid key</li>
+          <li>Wrong assembly = Syntax error or garbage output</li>
+          <li>Correct assembly + wrong seed = Wrong key (penalty)</li>
+          <li>3 wrong executions = 10-minute lockout</li>
+        </ul>
+      </div>
+    </div>
+  `,
+  correctKey: 'KEY_5F3E2A1B8C9D4E7F', // Example: changes based on date
+  hints: [
+    'Correct order: import hashlib → def generate_key(seed): → salted = ... → hashed = ... → key = ... → return key',
+    'Seed format: YYYY-MM-DD (today\'s date)',
+    'The salt is always "ARCHITECT_SALT_2026"',
+    'Logic: seed + salt → SHA256 → reverse → take first 16 → uppercase → prefix "KEY_"',
+    'Example: 2026-02-27 + salt → hash → reverse → KEY_5F3E2A1B8C9D4E7F'
+  ],
+  points: 400
+}

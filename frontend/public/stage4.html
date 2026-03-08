@@ -92,9 +92,14 @@
             
             <p>Remember: Not everything is visible to the naked eye. Sometimes you need to look deeper...</p>
             
-            <div class="secret-data" data-hint="Look at the attributes!" data-clue="The flag might be encoded..." data-flag="SFRNTF9NQVNURVI=">
-                <!-- Hidden data attribute above contains Base64 encoded flag -->
-            </div>
+                        <div class="info-box">
+                                <p>For this stage the master key is split across three fragment pages linked below.</p>
+                                <ul>
+                                    <li><a href="/stage4a.html">Fragment Alpha</a></li>
+                                    <li><a href="/stage4b.html">Fragment Beta</a></li>
+                                    <li><a href="/stage4c.html">Fragment Gamma</a></li>
+                                </ul>
+                        </div>
         </div>
         
         <footer>
@@ -102,27 +107,16 @@
         </footer>
     </div>
 
-    <!-- 
-        =====================================================
-        DEVELOPER NOTES (NOT THE FLAG):
-        =====================================================
-        This page was created for CTF Stage 4
-        The real flag is hidden in a data attribute
-        You'll need to decode it from Base64
-        =====================================================
+    <!--
+        Developer notes removed: frontend no longer exposes the flag in a data attribute.
+        Fragments (stage4a/b/c) contain the pieces for the master key.
     -->
 
     <script>
-        // Console message for those who check
-        console.log("%c🔍 Stage 4: HTML Detective", "color: #00ff88; font-size: 20px; font-weight: bold;");
-        console.log("%cLooking in the console? Good instinct!", "color: #00ff88; font-size: 14px;");
-        console.log("%cBut the flag is hidden in the HTML, not here...", "color: #ff6b6b; font-size: 14px;");
-        console.log("%cHint: Inspect the elements with class 'secret-data'", "color: #ffd700; font-size: 12px;");
+        // Console messages reduced to avoid leaking hints
+        console.log("%cStage 4 loaded.", "color: #00ff88; font-size: 14px;");
         
-        // This function is a decoy
-        function getFakeFlag() {
-            return "NOT_THE_REAL_FLAG";
-        }
+        // No client-side flag helpers here
         
         // Easter egg for curious minds
         window.addEventListener('keydown', function(e) {

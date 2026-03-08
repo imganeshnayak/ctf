@@ -1,24 +1,35 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import StageCard from '../components/StageCard';
 import ChallengeModal from '../components/ChallengeModal';
 import ProgressBar from '../components/ProgressBar';
-import { createOrGetUser, getAllStages, validateStageKey, getTimer } from '../services/api';
+import { createOrGetUser, getAllStages, validateStageKey } from '../services/api';
 
-function formatTimer(seconds) {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-}
+const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
 
 function Challenges() {
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [username, setUsername] = useState('');
     const [stages, setStages] = useState([]);
     const [selectedStage, setSelectedStage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [timer, setTimer] = useState({ running: false, remaining: 90 * 60 });
+    const [ctfGuardChecked, setCtfGuardChecked] = useState(false);
+
+    // Guard: if CTF has not started, bounce non-admin back to lobby
+    useEffect(() => {
+        if (!user) { setCtfGuardChecked(true); return; }
+        fetch(`${API_BASE}/api/lobby/status`)
+            .then(r => r.json())
+            .then(({ data }) => {
+                if (data && !data.ctfStarted) navigate('/lobby');
+                else setCtfGuardChecked(true);
+            })
+            .catch(() => setCtfGuardChecked(true));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     // Load stages when user logs in
     useEffect(() => {
@@ -27,20 +38,7 @@ function Challenges() {
         }
     }, [user]);
 
-    useEffect(() => {
-        let interval;
-        const fetchTimer = async () => {
-            try {
-                const data = await getTimer();
-                setTimer(data);
-            } catch (error) {
-                console.warn('Timer fetch failed:', error.message);
-            }
-        };
-        fetchTimer();
-        interval = setInterval(fetchTimer, 5000); // Poll every 5 seconds
-        return () => clearInterval(interval);
-    }, []);
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -55,6 +53,8 @@ function Challenges() {
             if (response.success) {
                 setUser(response.data);
                 localStorage.setItem('ctf_user', JSON.stringify(response.data));
+                // Always send new logins to lobby first
+                navigate('/lobby');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -142,6 +142,7 @@ function Challenges() {
         if (savedUser) {
             try {
                 setUser(JSON.parse(savedUser));
+                // CTF guard (above) will redirect to /lobby if CTF hasn't started
             } catch (error) {
                 localStorage.removeItem('ctf_user');
             }
@@ -155,13 +156,6 @@ function Challenges() {
         <div className="app">
             <div className="container">
 
-
-                <div className="timer-display">
-                    {/* Inline Timer Display Component */}
-                    <div className="timer-display" style={{ fontSize: '2.2rem', fontWeight: 'bold', color: '#0077ff', letterSpacing: '2px', margin: '1.5rem 0' }}>
-                        ⏰ {formatTimer(timer.remaining)} {timer.running ? '(Running)' : '(Stopped)'}
-                    </div>
-                </div>
 
                 {!user ? (
                     <div className="login-section fade-in">
@@ -184,9 +178,14 @@ function Challenges() {
                                 className="btn-primary"
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Loading...' : 'Start Challenge'}
+                                {isLoading ? 'Loading...' : 'Enter the Lobby'}
                             </button>
                         </form>
+                    </div>
+                ) : !ctfGuardChecked ? (
+                    <div className="text-center fade-in" style={{ padding: '4rem 0', color: 'var(--color-text-muted)' }}>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</div>
+                        <p>Checking CTF status...</p>
                     </div>
                 ) : (
                     <>

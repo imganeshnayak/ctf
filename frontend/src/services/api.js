@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ctf-zubh.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -41,25 +41,33 @@ export const validateStageKey = async (stageId, userId, submittedKey) => {
     return response.data;
 };
 
+export const unlockHint = async (stageId, userId) => {
+    const response = await api.post(`/stages/${stageId}/unlock-hint`, {
+        userId
+    });
+    return response.data;
+};
+
 // Leaderboard endpoints
 export const getLeaderboard = async () => {
     const response = await api.get('/leaderboard');
     return response.data;
 };
 
-// Timer endpoints
-export const getTimer = async () => {
-    const response = await api.get('/status');
+// Lobby endpoints
+export const getLobbyStatus = async () => {
+    const response = await api.get('/lobby/status');
     return response.data;
 };
 
-export const startTimer = async () => {
-    const response = await api.post('/timer/start');
+// Admin endpoints
+export const adminStartCTF = async (password) => {
+    const response = await api.post('/admin/start-ctf', { password });
     return response.data;
 };
 
-export const stopTimer = async () => {
-    const response = await api.post('/timer/stop');
+export const adminStopCTF = async (password) => {
+    const response = await api.post('/admin/stop-ctf', { password });
     return response.data;
 };
 
